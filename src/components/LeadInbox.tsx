@@ -26,11 +26,11 @@ export function LeadInbox() {
   return (
     <Tabs defaultValue="pending" className="w-full">
       <TabsList className="mb-6 bg-card border border-border">
-        <TabsTrigger value="pending" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+        <TabsTrigger value="pending" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground group">
           <Inbox className="w-4 h-4" />
           Pending
           {pendingLeads.length > 0 && (
-            <Badge variant="secondary" className="ml-1 bg-primary/20 text-primary">
+            <Badge variant="secondary" className="ml-1 bg-primary/20 text-primary group-data-[state=active]:bg-primary-foreground/20 group-data-[state=active]:text-primary-foreground">
               {pendingLeads.length}
             </Badge>
           )}
