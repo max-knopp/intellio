@@ -48,8 +48,8 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden animate-fade-in hover:shadow-lg transition-shadow duration-200">
-      <CardContent className="p-6">
+    <Card className="overflow-hidden animate-fade-in hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
+      <CardContent className="p-6 flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
         {lead.post_content && (
           <Popover>
             <PopoverTrigger asChild>
-              <div className="bg-muted/50 rounded-lg p-3 mb-4 cursor-pointer hover:bg-muted/70 transition-colors">
+              <div className="bg-muted/50 rounded-lg p-3 mb-4 cursor-pointer hover:bg-muted/70 transition-colors h-24 overflow-hidden">
                 <p className="text-sm text-muted-foreground line-clamp-3">{lead.post_content}</p>
                 {lead.post_date && (
                   <p className="text-xs text-muted-foreground/70 mt-2">
@@ -100,6 +100,7 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
             </PopoverContent>
           </Popover>
         )}
+        {!lead.post_content && <div className="h-24 mb-4" />}
 
         {/* LinkedIn Link */}
         <a
@@ -113,7 +114,7 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
         </a>
 
         {/* AI Message */}
-        <div className="mb-4">
+        <div className="mb-4 flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-foreground">AI-Generated Message</span>
             <Button
@@ -130,11 +131,11 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[120px] text-sm resize-none"
+              className="min-h-[120px] text-sm resize-none flex-1"
               placeholder="Edit your message..."
             />
           ) : (
-            <p className="text-sm text-foreground bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap">
+            <p className="text-sm text-foreground bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-5 flex-1">
               {message}
             </p>
           )}
@@ -153,7 +154,7 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
         )}
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto pt-4">
           <Button
             onClick={handleSend}
             disabled={isLoading}
