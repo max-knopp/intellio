@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, X, ExternalLink, Edit3, Sparkles } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { format } from 'date-fns';
@@ -75,14 +76,29 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
 
         {/* Post Content */}
         {lead.post_content && (
-          <div className="bg-muted/50 rounded-lg p-3 mb-4">
-            <p className="text-sm text-muted-foreground line-clamp-3">{lead.post_content}</p>
-            {lead.post_date && (
-              <p className="text-xs text-muted-foreground/70 mt-2">
-                Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
-              </p>
-            )}
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="bg-muted/50 rounded-lg p-3 mb-4 cursor-pointer hover:bg-muted/70 transition-colors">
+                <p className="text-sm text-muted-foreground line-clamp-3">{lead.post_content}</p>
+                {lead.post_date && (
+                  <p className="text-xs text-muted-foreground/70 mt-2">
+                    Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
+                  </p>
+                )}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-96 max-h-80 overflow-y-auto" align="start">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-foreground">Full Post Content</h4>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lead.post_content}</p>
+                {lead.post_date && (
+                  <p className="text-xs text-muted-foreground/70 pt-2 border-t border-border">
+                    Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
+                  </p>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
 
         {/* LinkedIn Link */}
