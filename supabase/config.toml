@@ -1,1 +1,4 @@
 project_id = "pnirdblczvangprdswxz"
+
+[functions.receive-lead]
+verify_jwt = false
