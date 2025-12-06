@@ -50,72 +50,75 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
   return (
     <Card className="overflow-hidden animate-fade-in hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
       <CardContent className="p-6 flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        {/* Header - fixed height */}
+        <div className="flex items-start justify-between mb-4 h-14">
           <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 border-2 border-border">
+            <Avatar className="h-12 w-12 border-2 border-border flex-shrink-0">
               <AvatarImage src={lead.profile_photo_url || undefined} alt={lead.contact_name} />
               <AvatarFallback className="bg-primary/10 text-primary font-medium">
                 {getInitials(lead.contact_name)}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <h3 className="font-display font-semibold text-foreground">{lead.contact_name}</h3>
-              <p className="text-sm text-muted-foreground">
+            <div className="min-w-0">
+              <h3 className="font-display font-semibold text-foreground truncate">{lead.contact_name}</h3>
+              <p className="text-sm text-muted-foreground line-clamp-2">
                 {lead.position}{lead.company && ` at ${lead.company}`}
               </p>
             </div>
           </div>
-          {lead.relevance_score && (
-            <Badge className={`${getScoreColor(lead.relevance_score)} font-medium`}>
-              <Sparkles className="w-3 h-3 mr-1" />
-              {lead.relevance_score}%
-            </Badge>
+          <Badge className={`${getScoreColor(lead.relevance_score)} font-medium flex-shrink-0 ${!lead.relevance_score ? 'invisible' : ''}`}>
+            <Sparkles className="w-3 h-3 mr-1" />
+            {lead.relevance_score || 0}%
+          </Badge>
+        </div>
+
+        {/* Post Content - fixed height */}
+        <div className="h-24 mb-4">
+          {lead.post_content ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted/70 transition-colors h-full overflow-hidden">
+                  <p className="text-sm text-muted-foreground line-clamp-2">{lead.post_content}</p>
+                  {lead.post_date && (
+                    <p className="text-xs text-muted-foreground/70 mt-2">
+                      Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
+                    </p>
+                  )}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-96 max-h-80 overflow-y-auto" align="start">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-foreground">Full Post Content</h4>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lead.post_content}</p>
+                  {lead.post_date && (
+                    <p className="text-xs text-muted-foreground/70 pt-2 border-t border-border">
+                      Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
+                    </p>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <div className="bg-muted/30 rounded-lg h-full" />
           )}
         </div>
 
-        {/* Post Content */}
-        {lead.post_content && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <div className="bg-muted/50 rounded-lg p-3 mb-4 cursor-pointer hover:bg-muted/70 transition-colors h-24 overflow-hidden">
-                <p className="text-sm text-muted-foreground line-clamp-3">{lead.post_content}</p>
-                {lead.post_date && (
-                  <p className="text-xs text-muted-foreground/70 mt-2">
-                    Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
-                  </p>
-                )}
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-96 max-h-80 overflow-y-auto" align="start">
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm text-foreground">Full Post Content</h4>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lead.post_content}</p>
-                {lead.post_date && (
-                  <p className="text-xs text-muted-foreground/70 pt-2 border-t border-border">
-                    Posted {format(new Date(lead.post_date), 'MMM d, yyyy')}
-                  </p>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-        )}
-        {!lead.post_content && <div className="h-24 mb-4" />}
+        {/* LinkedIn Link - fixed height */}
+        <div className="h-6 mb-4">
+          <a
+            href={lead.linkedin_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            View LinkedIn post
+          </a>
+        </div>
 
-        {/* LinkedIn Link */}
-        <a
-          href={lead.linkedin_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mb-4"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-          View LinkedIn post
-        </a>
-
-        {/* AI Message */}
-        <div className="mb-4 flex-1 flex flex-col">
-          <div className="flex items-center justify-between mb-2">
+        {/* AI Message - fixed height */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2 h-7">
             <span className="text-sm font-medium text-foreground">AI-Generated Message</span>
             <Button
               variant="ghost"
@@ -127,18 +130,20 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
               {isEditing ? 'Done' : 'Edit'}
             </Button>
           </div>
-          {isEditing ? (
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[120px] text-sm resize-none flex-1"
-              placeholder="Edit your message..."
-            />
-          ) : (
-            <p className="text-sm text-foreground bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-5 flex-1">
-              {message}
-            </p>
-          )}
+          <div className="h-32">
+            {isEditing ? (
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="h-full text-sm resize-none"
+                placeholder="Edit your message..."
+              />
+            ) : (
+              <p className="text-sm text-foreground bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-5 h-full overflow-hidden">
+                {message}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Reject Feedback */}
