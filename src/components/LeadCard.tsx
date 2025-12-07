@@ -147,7 +147,7 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
         </div>
 
         {/* Suggested Comment */}
-        {(lead.ai_comment || showActions) && (
+        {lead.ai_comment && (
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2 h-7">
               <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
@@ -187,8 +187,8 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
                   placeholder="Edit suggested comment..."
                 />
               ) : (
-                <p className="text-sm text-foreground bg-accent/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-4 h-full overflow-hidden">
-                  {comment || 'No suggested comment'}
+                <p className="text-sm text-foreground bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-4 h-full overflow-hidden">
+                  {comment}
                 </p>
               )}
             </div>
