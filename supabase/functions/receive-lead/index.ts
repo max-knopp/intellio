@@ -18,6 +18,7 @@ interface LeadPayload {
   post_content?: string;
   post_date?: string;
   ai_message: string;
+  ai_comment?: string;
   relevance_score?: number;
 }
 
@@ -110,6 +111,7 @@ serve(async (req) => {
         post_content: payload.post_content || null,
         post_date: payload.post_date || null,
         ai_message: payload.ai_message,
+        ai_comment: payload.ai_comment || null,
         relevance_score: payload.relevance_score || null,
         status: 'pending'
       })

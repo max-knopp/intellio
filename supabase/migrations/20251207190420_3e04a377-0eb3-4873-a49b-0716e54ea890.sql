@@ -1,0 +1,1 @@
+ALTER TABLE leads ADD COLUMN ai_comment text;

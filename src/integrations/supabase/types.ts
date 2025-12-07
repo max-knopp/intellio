@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          ai_comment: string | null
           ai_message: string
           company: string | null
           contact_name: string
@@ -37,6 +38,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_comment?: string | null
           ai_message: string
           company?: string | null
           contact_name: string
@@ -58,6 +60,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_comment?: string | null
           ai_message?: string
           company?: string | null
           contact_name?: string
