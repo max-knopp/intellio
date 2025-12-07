@@ -11,6 +11,7 @@ export interface Lead {
   company: string | null;
   profile_photo_url: string | null;
   linkedin_url: string;
+  post_url: string | null;
   post_content: string | null;
   post_date: string | null;
   ai_message: string;

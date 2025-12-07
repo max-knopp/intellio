@@ -27,6 +27,7 @@ export type Database = {
           position: string | null
           post_content: string | null
           post_date: string | null
+          post_url: string | null
           profile_photo_url: string | null
           rejection_feedback: string | null
           relevance_score: number | null
@@ -47,6 +48,7 @@ export type Database = {
           position?: string | null
           post_content?: string | null
           post_date?: string | null
+          post_url?: string | null
           profile_photo_url?: string | null
           rejection_feedback?: string | null
           relevance_score?: number | null
@@ -67,6 +69,7 @@ export type Database = {
           position?: string | null
           post_content?: string | null
           post_date?: string | null
+          post_url?: string | null
           profile_photo_url?: string | null
           rejection_feedback?: string | null
           relevance_score?: number | null

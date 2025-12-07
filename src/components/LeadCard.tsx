@@ -103,8 +103,19 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
           )}
         </div>
 
-        {/* LinkedIn Link - fixed height */}
-        <div className="h-6 mb-4">
+        {/* LinkedIn Links - fixed height */}
+        <div className="flex items-center gap-4 h-6 mb-4">
+          {lead.post_url && (
+            <a
+              href={lead.post_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              View Post
+            </a>
+          )}
           <a
             href={lead.linkedin_url}
             target="_blank"
@@ -112,7 +123,7 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            View LinkedIn post
+            View Profile
           </a>
         </div>
 
