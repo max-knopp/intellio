@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
-import { LogOut, Zap } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { LogOut, Zap } from "lucide-react";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -12,7 +12,7 @@ export function Header() {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Zap className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-display text-xl font-bold text-foreground">Plentimarket</span>
+          <span className="font-display text-xl font-bold text-foreground">Intell.io</span>
         </div>
 
         {user && (
