@@ -42,7 +42,7 @@ export function PodcastLeadCard({ lead }: PodcastLeadCardProps) {
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CardHeader className="pb-3 h-14">
+      <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
           <Avatar className="h-10 w-10 rounded-lg">
             <AvatarImage src={lead.podcast_cover_url || undefined} alt={lead.podcast_name} />
