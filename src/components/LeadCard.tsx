@@ -5,20 +5,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, X, ExternalLink, Edit3, Sparkles } from 'lucide-react';
+import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { format } from 'date-fns';
+import { toast } from '@/hooks/use-toast';
 
 interface LeadCardProps {
   lead: Lead;
   onSend: (id: string, message: string) => void;
   onReject: (id: string, feedback?: string) => void;
+  onMarkCommented?: (id: string) => void;
   isLoading?: boolean;
 }
 
-export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
+export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }: LeadCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState(lead.ai_message);
+  const [isEditingComment, setIsEditingComment] = useState(false);
+  const [comment, setComment] = useState(lead.ai_comment || '');
   const [showRejectFeedback, setShowRejectFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
 
@@ -46,6 +50,21 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
       setShowRejectFeedback(true);
     }
   };
+
+  const handleMarkCommented = () => {
+    onMarkCommented?.(lead.id);
+  };
+
+  const handleCopyComment = async () => {
+    try {
+      await navigator.clipboard.writeText(comment);
+      toast({ title: 'Copied!', description: 'Comment copied to clipboard.' });
+    } catch (err) {
+      toast({ title: 'Failed to copy', description: 'Please try again.', variant: 'destructive' });
+    }
+  };
+
+  const showActions = lead.status === 'pending';
 
   return (
     <Card className="overflow-hidden animate-fade-in hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
@@ -127,19 +146,70 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
           </a>
         </div>
 
+        {/* Suggested Comment */}
+        {(lead.ai_comment || showActions) && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2 h-7">
+              <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5" />
+                Suggested Comment
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyComment}
+                  className="h-7 px-2"
+                  disabled={!comment}
+                >
+                  <Copy className="w-3.5 h-3.5 mr-1" />
+                  Copy
+                </Button>
+                {showActions && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingComment(!isEditingComment)}
+                    className="h-7 px-2"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 mr-1" />
+                    {isEditingComment ? 'Done' : 'Edit'}
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className="h-24">
+              {isEditingComment ? (
+                <Textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="h-full text-sm resize-none"
+                  placeholder="Edit suggested comment..."
+                />
+              ) : (
+                <p className="text-sm text-foreground bg-accent/50 rounded-lg p-3 whitespace-pre-wrap line-clamp-4 h-full overflow-hidden">
+                  {comment || 'No suggested comment'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* AI Message - fixed height */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2 h-7">
             <span className="text-sm font-medium text-foreground">AI-Generated Message</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditing(!isEditing)}
-              className="h-7 px-2"
-            >
-              <Edit3 className="w-3.5 h-3.5 mr-1" />
-              {isEditing ? 'Done' : 'Edit'}
-            </Button>
+            {showActions && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditing(!isEditing)}
+                className="h-7 px-2"
+              >
+                <Edit3 className="w-3.5 h-3.5 mr-1" />
+                {isEditing ? 'Done' : 'Edit'}
+              </Button>
+            )}
           </div>
           <div className="h-32">
             {isEditing ? (
@@ -170,25 +240,36 @@ export function LeadCard({ lead, onSend, onReject, isLoading }: LeadCardProps) {
         )}
 
         {/* Actions */}
-        <div className="flex gap-2 mt-auto pt-4">
-          <Button
-            onClick={handleSend}
-            disabled={isLoading}
-            className="flex-1 bg-success hover:bg-success/90"
-          >
-            <Check className="w-4 h-4 mr-1.5" />
-            Send
-          </Button>
-          <Button
-            variant={showRejectFeedback ? "destructive" : "outline"}
-            onClick={handleReject}
-            disabled={isLoading}
-            className="flex-1"
-          >
-            <X className="w-4 h-4 mr-1.5" />
-            {showRejectFeedback ? 'Confirm Reject' : 'Reject'}
-          </Button>
-        </div>
+        {showActions && (
+          <div className="flex gap-2 mt-auto pt-4">
+            <Button
+              onClick={handleSend}
+              disabled={isLoading}
+              className="flex-1 bg-success hover:bg-success/90"
+            >
+              <Check className="w-4 h-4 mr-1.5" />
+              Send
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleMarkCommented}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              <MessageSquare className="w-4 h-4 mr-1.5" />
+              Commented
+            </Button>
+            <Button
+              variant={showRejectFeedback ? "destructive" : "outline"}
+              onClick={handleReject}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              <X className="w-4 h-4 mr-1.5" />
+              {showRejectFeedback ? 'Confirm' : 'Reject'}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

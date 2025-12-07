@@ -2,10 +2,10 @@ import { useLeads } from '@/hooks/useLeads';
 import { LeadCard } from './LeadCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Inbox, Send, XCircle, Loader2 } from 'lucide-react';
+import { Inbox, Send, XCircle, Loader2, MessageSquare } from 'lucide-react';
 
 export function LeadInbox() {
-  const { pendingLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead } = useLeads();
+  const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented } = useLeads();
 
   const handleSend = (id: string, message: string) => {
     sendLead.mutate({ id, message });
@@ -13,6 +13,10 @@ export function LeadInbox() {
 
   const handleReject = (id: string, feedback?: string) => {
     rejectLead.mutate({ id, feedback });
+  };
+
+  const handleMarkCommented = (id: string) => {
+    markCommented.mutate({ id });
   };
 
   if (isLoading) {
@@ -32,6 +36,15 @@ export function LeadInbox() {
           {pendingLeads.length > 0 && (
             <Badge variant="secondary" className="ml-1 bg-primary/20 text-primary group-data-[state=active]:bg-primary-foreground/20 group-data-[state=active]:text-primary-foreground">
               {pendingLeads.length}
+            </Badge>
+          )}
+        </TabsTrigger>
+        <TabsTrigger value="commented" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+          <MessageSquare className="w-4 h-4" />
+          Commented
+          {commentedLeads.length > 0 && (
+            <Badge variant="secondary" className="ml-1">
+              {commentedLeads.length}
             </Badge>
           )}
         </TabsTrigger>
@@ -70,7 +83,31 @@ export function LeadInbox() {
                 lead={lead}
                 onSend={handleSend}
                 onReject={handleReject}
-                isLoading={sendLead.isPending || rejectLead.isPending}
+                onMarkCommented={handleMarkCommented}
+                isLoading={sendLead.isPending || rejectLead.isPending || markCommented.isPending}
+              />
+            ))}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="commented">
+        {commentedLeads.length === 0 ? (
+          <EmptyState
+            icon={<MessageSquare className="w-12 h-12 text-muted-foreground/50" />}
+            title="No commented leads"
+            description="Leads you've commented on will appear here."
+          />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {commentedLeads.map((lead) => (
+              <LeadCard
+                key={lead.id}
+                lead={lead}
+                onSend={handleSend}
+                onReject={handleReject}
+                onMarkCommented={handleMarkCommented}
+                isLoading={false}
               />
             ))}
           </div>
@@ -92,6 +129,7 @@ export function LeadInbox() {
                 lead={lead}
                 onSend={handleSend}
                 onReject={handleReject}
+                onMarkCommented={handleMarkCommented}
                 isLoading={false}
               />
             ))}
@@ -114,6 +152,7 @@ export function LeadInbox() {
                 lead={lead}
                 onSend={handleSend}
                 onReject={handleReject}
+                onMarkCommented={handleMarkCommented}
                 isLoading={false}
               />
             ))}

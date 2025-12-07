@@ -15,8 +15,9 @@ export interface Lead {
   post_content: string | null;
   post_date: string | null;
   ai_message: string;
+  ai_comment: string | null;
   relevance_score: number | null;
-  status: 'pending' | 'sent' | 'rejected';
+  status: 'pending' | 'sent' | 'rejected' | 'commented';
   rejection_feedback: string | null;
   final_message: string | null;
   sent_at: string | null;
@@ -86,18 +87,39 @@ export function useLeads() {
     },
   });
 
+  const markCommented = useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ status: 'commented' })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      toast({ title: 'Marked as commented', description: 'The lead has been marked as commented.' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const pendingLeads = leads.filter(l => l.status === 'pending');
+  const commentedLeads = leads.filter(l => l.status === 'commented');
   const sentLeads = leads.filter(l => l.status === 'sent');
   const rejectedLeads = leads.filter(l => l.status === 'rejected');
 
   return {
     leads,
     pendingLeads,
+    commentedLeads,
     sentLeads,
     rejectedLeads,
     isLoading,
     error,
     sendLead,
     rejectLead,
+    markCommented,
   };
 }
