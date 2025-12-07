@@ -1,4 +1,4 @@
-import { Inbox, BarChart3, Mic, PanelLeftClose, PanelLeft, Zap } from "lucide-react";
+import { Inbox, BarChart3, Mic, PanelLeftClose, PanelLeft, Zap, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -12,6 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { title: "Lead Inbox", url: "/", icon: Inbox },
@@ -21,6 +22,7 @@ const navItems = [
 
 export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
+  const { user, signOut } = useAuth();
   const collapsed = state === "collapsed";
 
   return (
@@ -60,13 +62,35 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Toggle Button at Bottom */}
-      <SidebarFooter className="p-4 border-t border-border">
+      {/* Footer with User Info and Toggle */}
+      <SidebarFooter className="p-4 border-t border-border space-y-3">
+        {/* User Email & Sign Out */}
+        {user && (
+          <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
+            {!collapsed && (
+              <span className="text-sm text-muted-foreground truncate flex-1">
+                {user.email}
+              </span>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="flex-shrink-0"
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+              {!collapsed && <span className="ml-2">Sign out</span>}
+            </Button>
+          </div>
+        )}
+
+        {/* Toggle Button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={toggleSidebar}
-          className={`w-full justify-center ${collapsed ? "" : "justify-start"}`}
+          className={`w-full ${collapsed ? "justify-center" : "justify-start"}`}
         >
           {collapsed ? (
             <PanelLeft className="h-5 w-5" />
