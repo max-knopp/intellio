@@ -14,6 +14,7 @@ interface LeadPayload {
   company?: string;
   profile_photo_url?: string;
   linkedin_url: string;
+  post_url?: string;
   post_content?: string;
   post_date?: string;
   ai_message: string;
@@ -105,6 +106,7 @@ serve(async (req) => {
         company: payload.company || null,
         profile_photo_url: payload.profile_photo_url || null,
         linkedin_url: payload.linkedin_url,
+        post_url: payload.post_url || null,
         post_content: payload.post_content || null,
         post_date: payload.post_date || null,
         ai_message: payload.ai_message,
