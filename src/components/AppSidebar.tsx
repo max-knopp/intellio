@@ -27,11 +27,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 py-4">
-            {!collapsed && (
-              <span className="font-display text-lg font-semibold text-foreground">
-                Plentimarket
-              </span>
-            )}
+            {!collapsed && <span className="font-display text-lg font-semibold text-foreground">Intell.io</span>}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

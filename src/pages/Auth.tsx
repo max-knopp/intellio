@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/hooks/use-toast';
-import { Loader2, Zap } from 'lucide-react';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/hooks/use-toast";
+import { Loader2, Zap } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Auth() {
   const { user, signIn, signUp, loading } = useAuth();
@@ -16,17 +16,17 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
   // Signup form state
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupName, setSignupName] = useState("");
 
   useEffect(() => {
     if (user && !loading) {
-      navigate('/');
+      navigate("/");
     }
   }, [user, loading, navigate]);
 
@@ -38,13 +38,13 @@ export default function Auth() {
 
     if (error) {
       toast({
-        title: 'Login failed',
+        title: "Login failed",
         description: error.message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } else {
-      toast({ title: 'Welcome back!', description: 'You have successfully logged in.' });
-      navigate('/');
+      toast({ title: "Welcome back!", description: "You have successfully logged in." });
+      navigate("/");
     }
 
     setIsSubmitting(false);
@@ -56,9 +56,9 @@ export default function Auth() {
 
     if (signupPassword.length < 6) {
       toast({
-        title: 'Password too short',
-        description: 'Password must be at least 6 characters.',
-        variant: 'destructive',
+        title: "Password too short",
+        description: "Password must be at least 6 characters.",
+        variant: "destructive",
       });
       setIsSubmitting(false);
       return;
@@ -68,17 +68,17 @@ export default function Auth() {
 
     if (error) {
       let message = error.message;
-      if (message.includes('already registered')) {
-        message = 'This email is already registered. Please sign in instead.';
+      if (message.includes("already registered")) {
+        message = "This email is already registered. Please sign in instead.";
       }
       toast({
-        title: 'Signup failed',
+        title: "Signup failed",
         description: message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } else {
-      toast({ title: 'Account created!', description: 'Welcome to Plentimarket.' });
-      navigate('/');
+      toast({ title: "Account created!", description: "Welcome to Intellio." });
+      navigate("/");
     }
 
     setIsSubmitting(false);
@@ -100,7 +100,7 @@ export default function Auth() {
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
             <Zap className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span className="font-display text-2xl font-bold text-foreground">Plentimarket</span>
+          <span className="font-display text-2xl font-bold text-foreground">Intellio</span>
         </div>
 
         <Card className="border-border shadow-xl">
