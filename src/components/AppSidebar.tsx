@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { title: "Lead Inbox", url: "/", icon: Inbox },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Podcast Leads", url: "/podcasts", icon: Mic },
 ];
 
 export function AppSidebar() {
@@ -33,9 +32,7 @@ export function AppSidebar() {
           <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
             <Zap className="w-5 h-5 text-primary-foreground" />
           </div>
-          {!collapsed && (
-            <span className="font-display text-xl font-semibold text-foreground">Intell.io</span>
-          )}
+          {!collapsed && <span className="font-display text-xl font-semibold text-foreground">Intell.io</span>}
         </div>
 
         {/* Navigation */}
@@ -67,18 +64,8 @@ export function AppSidebar() {
         {/* User Email & Sign Out */}
         {user && (
           <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
-            {!collapsed && (
-              <span className="text-sm text-muted-foreground truncate flex-1">
-                {user.email}
-              </span>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={signOut}
-              className="flex-shrink-0"
-              title="Sign out"
-            >
+            {!collapsed && <span className="text-sm text-muted-foreground truncate flex-1">{user.email}</span>}
+            <Button variant="ghost" size="sm" onClick={signOut} className="flex-shrink-0" title="Sign out">
               <LogOut className="h-4 w-4" />
               {!collapsed && <span className="ml-2">Sign out</span>}
             </Button>
