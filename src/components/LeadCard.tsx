@@ -7,10 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy } from 'lucide-react';
+import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy, Flame, Thermometer, Snowflake } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
-import { format } from 'date-fns';
+import { format, differenceInHours } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
+
+export type RecencyLevel = 'hot' | 'warm' | 'cold';
+
+export function getRecencyLevel(dateStr: string | null): RecencyLevel {
+  if (!dateStr) return 'cold';
+  const hours = differenceInHours(new Date(), new Date(dateStr));
+  if (hours < 24) return 'hot';
+  if (hours < 72) return 'warm';
+  return 'cold';
+}
 
 const REJECTION_REASONS = [
   { id: 'not_icp', label: 'Profile not ICP' },
@@ -114,10 +124,13 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
               </p>
             </div>
           </div>
-          <Badge className={`${getScoreColor(lead.relevance_score)} font-medium text-xs flex-shrink-0 ${!lead.relevance_score ? 'invisible' : ''}`}>
-            <Sparkles className="w-3 h-3 mr-1" />
-            {lead.relevance_score || 0}%
-          </Badge>
+          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            <RecencyBadge dateStr={lead.post_date || lead.created_at} />
+            <Badge className={`${getScoreColor(lead.relevance_score)} font-medium text-xs ${!lead.relevance_score ? 'invisible' : ''}`}>
+              <Sparkles className="w-3 h-3 mr-1" />
+              {lead.relevance_score || 0}%
+            </Badge>
+          </div>
         </div>
 
         {/* Post Content */}
@@ -357,5 +370,34 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function RecencyBadge({ dateStr }: { dateStr: string | null }) {
+  const level = getRecencyLevel(dateStr);
+  
+  if (level === 'hot') {
+    return (
+      <Badge className="bg-orange-500/20 text-orange-600 border-orange-500/30 text-xs">
+        <Flame className="w-3 h-3 mr-1" />
+        Hot
+      </Badge>
+    );
+  }
+  
+  if (level === 'warm') {
+    return (
+      <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30 text-xs">
+        <Thermometer className="w-3 h-3 mr-1" />
+        Warm
+      </Badge>
+    );
+  }
+  
+  return (
+    <Badge className="bg-blue-500/20 text-blue-600 border-blue-500/30 text-xs">
+      <Snowflake className="w-3 h-3 mr-1" />
+      Cold
+    </Badge>
   );
 }
