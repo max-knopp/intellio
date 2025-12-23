@@ -25,6 +25,29 @@ serve(async (req) => {
   let cargoPayload: Record<string, unknown> | null = null;
 
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error("Missing Authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !authUser) {
+      console.error("Invalid auth token:", authError?.message);
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication token" }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Authenticated user: ${authUser.id}`);
+
     const { leadId: reqLeadId, message } = await req.json();
     leadId = reqLeadId;
     
@@ -48,13 +71,36 @@ serve(async (req) => {
     if (fetchError || !lead) {
       console.error("Error fetching lead:", fetchError);
       return new Response(
-        JSON.stringify({ error: "Lead not found", details: fetchError?.message }),
+        JSON.stringify({ error: "Lead not found" }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Verify authorization: user must own the lead OR be a member of the lead's org
+    let isAuthorized = lead.user_id === authUser.id;
+    
+    if (!isAuthorized && lead.org_id) {
+      // Check if user is a member of the lead's organization
+      const { data: membership } = await supabase
+        .from('org_members')
+        .select('id')
+        .eq('org_id', lead.org_id)
+        .eq('user_id', authUser.id)
+        .maybeSingle();
+      
+      isAuthorized = !!membership;
+    }
+
+    if (!isAuthorized) {
+      console.error(`User ${authUser.id} is not authorized to access lead ${leadId}`);
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     userId = lead.user_id;
-    console.log(`Found lead: ${lead.contact_name} at ${lead.company}`);
+    console.log(`Authorized access to lead: ${lead.contact_name} at ${lead.company}`);
 
     // Prepare the payload for Cargo
     cargoPayload = {
