@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { title: "Lead Inbox", url: "/", icon: Inbox },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Podcast Leads", url: "/podcasts", icon: Mic },
 ];
 
 export function AppSidebar() {
