@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,6 +38,14 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [otherFeedback, setOtherFeedback] = useState('');
+
+  // Sync state when lead changes
+  useEffect(() => {
+    setMessage(lead.ai_message);
+    setComment(lead.ai_comment || '');
+    setIsEditingMessage(false);
+    setIsEditingComment(false);
+  }, [lead.id]);
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
