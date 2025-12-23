@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { OrganizationProvider } from "@/hooks/useOrganization";
 import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -11,6 +12,7 @@ import Analytics from "./pages/Analytics";
 import Contacts from "./pages/Contacts";
 import Podcasts from "./pages/Podcasts";
 import Help from "./pages/Help";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,7 +20,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
+      <OrganizationProvider>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -64,11 +67,20 @@ const App = () => (
                 </AppLayout>
               }
             />
+            <Route
+              path="/settings"
+              element={
+                <AppLayout>
+                  <Settings />
+                </AppLayout>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </TooltipProvider>
+        </TooltipProvider>
+      </OrganizationProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
