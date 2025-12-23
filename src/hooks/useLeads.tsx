@@ -17,7 +17,7 @@ export interface Lead {
   ai_message: string;
   ai_comment: string | null;
   relevance_score: number | null;
-  status: 'pending' | 'sent' | 'rejected' | 'commented';
+  status: 'pending' | 'sent' | 'rejected' | 'commented' | 'interested' | 'converted';
   rejection_feedback: string | null;
   final_message: string | null;
   sent_at: string | null;
@@ -105,10 +105,30 @@ export function useLeads() {
     },
   });
 
+  const updateLeadStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: Lead['status'] }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ status })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      toast({ title: 'Status updated', description: 'The contact status has been updated.' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const pendingLeads = leads.filter(l => l.status === 'pending');
   const commentedLeads = leads.filter(l => l.status === 'commented');
   const sentLeads = leads.filter(l => l.status === 'sent');
   const rejectedLeads = leads.filter(l => l.status === 'rejected');
+  const interestedLeads = leads.filter(l => l.status === 'interested');
+  const convertedLeads = leads.filter(l => l.status === 'converted');
 
   return {
     leads,
@@ -116,10 +136,13 @@ export function useLeads() {
     commentedLeads,
     sentLeads,
     rejectedLeads,
+    interestedLeads,
+    convertedLeads,
     isLoading,
     error,
     sendLead,
     rejectLead,
     markCommented,
+    updateLeadStatus,
   };
 }

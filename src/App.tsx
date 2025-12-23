@@ -8,6 +8,7 @@ import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Analytics from "./pages/Analytics";
+import Contacts from "./pages/Contacts";
 import Podcasts from "./pages/Podcasts";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,14 @@ const App = () => (
               element={
                 <AppLayout>
                   <Analytics />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/contacts"
+              element={
+                <AppLayout>
+                  <Contacts />
                 </AppLayout>
               }
             />

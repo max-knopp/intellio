@@ -1,4 +1,4 @@
-import { Inbox, BarChart3, Mic, PanelLeftClose, PanelLeft, Zap, LogOut } from "lucide-react";
+import { Inbox, BarChart3, Users, PanelLeftClose, PanelLeft, Zap, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { title: "Lead Inbox", url: "/", icon: Inbox },
+  { title: "Contacts", url: "/contacts", icon: Users },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
