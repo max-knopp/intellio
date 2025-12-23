@@ -72,7 +72,7 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
     <div
       onClick={onClick}
       className={cn(
-        "grid grid-cols-[32px_100px_120px_80px_1fr_60px_50px] items-center gap-2 px-3 py-2 cursor-pointer border-b border-border transition-colors text-[11px]",
+        "grid grid-cols-[32px_100px_120px_80px_1fr_60px_50px] items-center gap-2 px-3 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
         isSelected 
           ? "bg-primary/10 border-l-2 border-l-primary" 
           : "hover:bg-muted/50"
@@ -81,7 +81,7 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
       {/* Avatar */}
       <Avatar className="h-7 w-7 border border-border flex-shrink-0">
         <AvatarImage src={lead.profile_photo_url || undefined} alt={lead.contact_name} />
-        <AvatarFallback className="bg-primary/10 text-primary font-medium text-[9px]">
+        <AvatarFallback className="bg-primary/10 text-primary font-medium text-[10px]">
           {getInitials(lead.contact_name)}
         </AvatarFallback>
       </Avatar>
@@ -97,7 +97,7 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
       </span>
 
       {/* Title */}
-      <span className="text-muted-foreground truncate text-[10px]">
+      <span className="text-muted-foreground truncate text-[11px]">
         {lead.position || '—'}
       </span>
 
