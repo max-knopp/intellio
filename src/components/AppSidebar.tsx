@@ -1,4 +1,4 @@
-import { Inbox, BarChart3, Users, PanelLeftClose, PanelLeft, Zap, LogOut } from "lucide-react";
+import { Inbox, BarChart3, Users, PanelLeftClose, PanelLeft, Zap, LogOut, HelpCircle } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const navItems = [
   { title: "Lead Inbox", url: "/", icon: Inbox },
   { title: "Contacts", url: "/contacts", icon: Users },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Help", url: "/help", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
