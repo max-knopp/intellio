@@ -72,49 +72,47 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
     <div
       onClick={onClick}
       className={cn(
-        "grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-3 px-3 py-2.5 cursor-pointer border-b border-border transition-colors",
+        "grid grid-cols-[32px_100px_120px_80px_1fr_60px_50px] items-center gap-2 px-3 py-2 cursor-pointer border-b border-border transition-colors text-[11px]",
         isSelected 
           ? "bg-primary/10 border-l-2 border-l-primary" 
           : "hover:bg-muted/50"
       )}
     >
       {/* Avatar */}
-      <Avatar className="h-8 w-8 border border-border flex-shrink-0">
+      <Avatar className="h-7 w-7 border border-border flex-shrink-0">
         <AvatarImage src={lead.profile_photo_url || undefined} alt={lead.contact_name} />
-        <AvatarFallback className="bg-primary/10 text-primary font-medium text-[10px]">
+        <AvatarFallback className="bg-primary/10 text-primary font-medium text-[9px]">
           {getInitials(lead.contact_name)}
         </AvatarFallback>
       </Avatar>
 
-      {/* Name, Company & Title */}
-      <div className="min-w-0 space-y-0.5">
-        <div className="flex items-center gap-1.5">
-          {lead.company && (
-            <span className="text-[11px] font-semibold text-primary truncate max-w-[100px]">
-              {lead.company}
-            </span>
-          )}
-          <span className="text-[11px] font-medium text-foreground truncate">
-            {lead.contact_name}
-          </span>
-        </div>
-        <p className="text-[10px] text-muted-foreground truncate">
-          {lead.position || lead.post_content || 'No details'}
-        </p>
-      </div>
+      {/* Company */}
+      <span className="font-semibold text-primary truncate">
+        {lead.company || '—'}
+      </span>
+
+      {/* Name */}
+      <span className="font-medium text-foreground truncate">
+        {lead.contact_name}
+      </span>
+
+      {/* Title */}
+      <span className="text-muted-foreground truncate text-[10px]">
+        {lead.position || '—'}
+      </span>
 
       {/* Post Preview */}
-      <p className="text-[10px] text-muted-foreground truncate max-w-[150px] hidden lg:block">
-        {lead.post_content?.slice(0, 60) || '—'}
+      <p className="text-muted-foreground truncate">
+        {lead.post_content || '—'}
       </p>
 
       {/* Recency Badge */}
-      <div className="flex-shrink-0">
+      <div className="flex justify-center">
         {getRecencyBadge()}
       </div>
 
       {/* Relevancy Badge */}
-      <div className="flex-shrink-0 w-12 text-right">
+      <div className="flex justify-end">
         {getRelevancyBadge()}
       </div>
     </div>
