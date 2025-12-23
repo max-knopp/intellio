@@ -39,11 +39,18 @@ export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
 
-  // Show all leads as contacts (each lead is a unique contact entry)
+  // Deduplicate by linkedin_url, keeping the most recent lead
   const contacts = useMemo(() => {
-    return [...leads].sort((a, b) => 
+    const urlMap = new Map<string, Lead>();
+    const sortedLeads = [...leads].sort((a, b) => 
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
+    sortedLeads.forEach((lead) => {
+      if (!urlMap.has(lead.linkedin_url)) {
+        urlMap.set(lead.linkedin_url, lead);
+      }
+    });
+    return Array.from(urlMap.values());
   }, [leads]);
 
   // Filter contacts
