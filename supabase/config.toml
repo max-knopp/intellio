@@ -2,3 +2,6 @@ project_id = "pnirdblczvangprdswxz"
 
 [functions.receive-lead]
 verify_jwt = false
+
+[functions.send-to-cargo]
+verify_jwt = false
