@@ -84,58 +84,56 @@ export function LeadInbox() {
           <div className="flex flex-col h-full">
             <Tabs defaultValue="pending" className="flex flex-col h-full">
               {/* Header */}
-              <div className="p-3 border-b border-border space-y-3">
-                <TabsList className="w-full h-auto p-1 bg-muted/50">
-                  <div className="grid grid-cols-4 gap-1 w-full">
-                    <TabsTrigger 
-                      value="pending" 
-                      className="flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                    >
-                      <Inbox className="w-4 h-4" />
-                      <span className="text-[10px]">Pending</span>
-                      {pendingLeads.length > 0 && (
-                        <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
-                          {pendingLeads.length}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="commented" 
-                      className="flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="text-[10px]">Commented</span>
-                      {commentedLeads.length > 0 && (
-                        <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
-                          {commentedLeads.length}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="sent" 
-                      className="flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                    >
-                      <Send className="w-4 h-4" />
-                      <span className="text-[10px]">Sent</span>
-                      {sentLeads.length > 0 && (
-                        <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
-                          {sentLeads.length}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="rejected" 
-                      className="flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      <span className="text-[10px]">Rejected</span>
-                      {rejectedLeads.length > 0 && (
-                        <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
-                          {rejectedLeads.length}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                  </div>
+              <div className="p-2 border-b border-border space-y-2">
+                <TabsList className="w-full h-8 p-0.5 bg-muted/50 grid grid-cols-4">
+                  <TabsTrigger 
+                    value="pending" 
+                    className="h-7 text-[11px] gap-1 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <Inbox className="w-3 h-3" />
+                    <span>Pending</span>
+                    {pendingLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px] ml-0.5">
+                        {pendingLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="commented" 
+                    className="h-7 text-[11px] gap-1 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <MessageSquare className="w-3 h-3" />
+                    <span>Commented</span>
+                    {commentedLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px] ml-0.5">
+                        {commentedLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="sent" 
+                    className="h-7 text-[11px] gap-1 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <Send className="w-3 h-3" />
+                    <span>Sent</span>
+                    {sentLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px] ml-0.5">
+                        {sentLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="rejected" 
+                    className="h-7 text-[11px] gap-1 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <XCircle className="w-3 h-3" />
+                    <span>Rejected</span>
+                    {rejectedLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px] ml-0.5">
+                        {rejectedLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
                 </TabsList>
 
                 <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
