@@ -39,17 +39,11 @@ export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
 
-  // Group leads by person_id to get unique contacts
+  // Show all leads as contacts (each lead is a unique contact entry)
   const contacts = useMemo(() => {
-    const personMap = new Map<string, Lead>();
-    leads.forEach((lead) => {
-      const existing = personMap.get(lead.person_id);
-      // Keep the most recent lead for each person
-      if (!existing || new Date(lead.created_at) > new Date(existing.created_at)) {
-        personMap.set(lead.person_id, lead);
-      }
-    });
-    return Array.from(personMap.values());
+    return [...leads].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
   }, [leads]);
 
   // Filter contacts
