@@ -25,30 +25,30 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
-      <SidebarContent className="py-6">
+    <Sidebar collapsible="icon" className="border-r border-border/50 bg-background/50">
+      <SidebarContent className="py-4">
         {/* Logo */}
-        <div className={`flex items-center gap-3 px-4 mb-8 ${collapsed ? "justify-center" : ""}`}>
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-primary-foreground" />
+        <div className={`flex items-center gap-2 px-3 mb-4 ${collapsed ? "justify-center" : ""}`}>
+          <div className="w-7 h-7 rounded-lg bg-primary/80 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-4 h-4 text-primary-foreground" />
           </div>
-          {!collapsed && <span className="font-display text-xl font-semibold text-foreground">Intell.io</span>}
+          {!collapsed && <span className="font-display text-base font-medium text-foreground">Intell.io</span>}
         </div>
 
         {/* Navigation */}
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-2 px-2">
+            <SidebarMenu className="space-y-1 px-2">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                      className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                      activeClassName="bg-sidebar-accent/70 text-sidebar-primary font-medium"
                     >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -60,14 +60,14 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer with User Info and Toggle */}
-      <SidebarFooter className="p-4 border-t border-border space-y-3">
+      <SidebarFooter className="p-3 border-t border-border/50 space-y-2">
         {/* User Email & Sign Out */}
         {user && (
           <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}>
-            {!collapsed && <span className="text-sm text-muted-foreground truncate flex-1">{user.email}</span>}
-            <Button variant="ghost" size="sm" onClick={signOut} className="flex-shrink-0" title="Sign out">
-              <LogOut className="h-4 w-4" />
-              {!collapsed && <span className="ml-2">Sign out</span>}
+            {!collapsed && <span className="text-xs text-muted-foreground truncate flex-1">{user.email}</span>}
+            <Button variant="ghost" size="sm" onClick={signOut} className="flex-shrink-0 h-7 px-2" title="Sign out">
+              <LogOut className="h-3.5 w-3.5" />
+              {!collapsed && <span className="ml-1.5 text-xs">Sign out</span>}
             </Button>
           </div>
         )}
@@ -77,14 +77,14 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           onClick={toggleSidebar}
-          className={`w-full ${collapsed ? "justify-center" : "justify-start"}`}
+          className={`w-full h-7 ${collapsed ? "justify-center" : "justify-start"}`}
         >
           {collapsed ? (
-            <PanelLeft className="h-5 w-5" />
+            <PanelLeft className="h-4 w-4" />
           ) : (
             <>
-              <PanelLeftClose className="h-5 w-5 mr-2" />
-              <span>Hide Menu</span>
+              <PanelLeftClose className="h-4 w-4 mr-1.5" />
+              <span className="text-xs">Hide</span>
             </>
           )}
         </Button>
