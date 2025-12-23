@@ -32,10 +32,11 @@ export function useLeads() {
     queryKey: ['leads', user?.id],
     queryFn: async () => {
       if (!user) return [];
+      // RLS handles access control - fetch all leads the user can see
+      // (their own leads + leads from their organization)
       const { data, error } = await supabase
         .from('leads')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
