@@ -14,8 +14,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Initialize Supabase client
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  let leadId: string | null = null;
+  let userId: string | null = null;
+  let cargoPayload: Record<string, unknown> | null = null;
+
   try {
-    const { leadId, message } = await req.json();
+    const { leadId: reqLeadId, message } = await req.json();
+    leadId = reqLeadId;
     
     console.log(`Processing send-to-cargo for lead: ${leadId}`);
 
@@ -26,11 +36,6 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Fetch the lead data
     const { data: lead, error: fetchError } = await supabase
@@ -47,10 +52,11 @@ serve(async (req) => {
       );
     }
 
+    userId = lead.user_id;
     console.log(`Found lead: ${lead.contact_name} at ${lead.company}`);
 
     // Prepare the payload for Cargo
-    const cargoPayload = {
+    cargoPayload = {
       id: lead.id,
       person_id: lead.person_id,
       contact_name: lead.contact_name,
@@ -82,6 +88,25 @@ serve(async (req) => {
     console.log(`Cargo API response status: ${cargoResponse.status}`);
     console.log(`Cargo API response body: ${cargoResponseText}`);
 
+    // Log the API call to the database
+    const { error: logError } = await supabase
+      .from('cargo_api_logs')
+      .insert({
+        user_id: userId,
+        lead_id: leadId,
+        request_payload: cargoPayload,
+        response_status: cargoResponse.status,
+        response_body: cargoResponseText,
+        success: cargoResponse.ok,
+        error_message: cargoResponse.ok ? null : cargoResponseText,
+      });
+
+    if (logError) {
+      console.error("Failed to log Cargo API call:", logError);
+    } else {
+      console.log("Cargo API call logged successfully");
+    }
+
     if (!cargoResponse.ok) {
       console.error("Cargo API error:", cargoResponseText);
       return new Response(
@@ -108,6 +133,22 @@ serve(async (req) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error("Unexpected error:", error);
+
+    // Log the error to the database if we have the required info
+    if (leadId && userId) {
+      await supabase
+        .from('cargo_api_logs')
+        .insert({
+          user_id: userId,
+          lead_id: leadId,
+          request_payload: cargoPayload || {},
+          response_status: null,
+          response_body: null,
+          success: false,
+          error_message: errorMessage,
+        });
+    }
+
     return new Response(
       JSON.stringify({ error: "Internal server error", details: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
