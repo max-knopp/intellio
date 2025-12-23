@@ -166,13 +166,11 @@ serve(async (req) => {
     }
 
     if (!cargoResponse.ok) {
+      // Log detailed error server-side for debugging
       console.error("Cargo API error:", cargoResponseText);
+      // Return generic error to client
       return new Response(
-        JSON.stringify({ 
-          error: "Failed to send to Cargo", 
-          status: cargoResponse.status,
-          details: cargoResponseText 
-        }),
+        JSON.stringify({ error: "Failed to send message. Please try again or contact support." }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -207,8 +205,9 @@ serve(async (req) => {
         });
     }
 
+    // Return generic error to client - detailed error already logged above
     return new Response(
-      JSON.stringify({ error: "Internal server error", details: errorMessage }),
+      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
