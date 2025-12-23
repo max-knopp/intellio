@@ -5,10 +5,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
+
+const REJECTION_REASONS = [
+  { id: 'not_icp', label: 'Profile not ICP' },
+  { id: 'not_relevant', label: 'Post not relevant' },
+  { id: 'bad_quality', label: 'Bad quality of prewritten comment/message' },
+] as const;
 
 interface LeadCardProps {
   lead: Lead;
@@ -23,8 +31,8 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
   const [message, setMessage] = useState(lead.ai_message);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [comment, setComment] = useState(lead.ai_comment || '');
-  const [showRejectFeedback, setShowRejectFeedback] = useState(false);
-  const [feedback, setFeedback] = useState('');
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -41,14 +49,26 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
     onSend(lead.id, message);
   };
 
-  const handleReject = () => {
-    if (showRejectFeedback) {
-      onReject(lead.id, feedback);
-      setShowRejectFeedback(false);
-      setFeedback('');
-    } else {
-      setShowRejectFeedback(true);
-    }
+  const handleRejectClick = () => {
+    setShowRejectDialog(true);
+  };
+
+  const handleConfirmReject = () => {
+    const feedback = selectedReasons
+      .map(id => REJECTION_REASONS.find(r => r.id === id)?.label)
+      .filter(Boolean)
+      .join(', ');
+    onReject(lead.id, feedback || undefined);
+    setShowRejectDialog(false);
+    setSelectedReasons([]);
+  };
+
+  const toggleReason = (reasonId: string) => {
+    setSelectedReasons(prev =>
+      prev.includes(reasonId)
+        ? prev.filter(id => id !== reasonId)
+        : [...prev, reasonId]
+    );
   };
 
   const handleMarkCommented = () => {
@@ -227,17 +247,46 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
           </div>
         </div>
 
-        {/* Reject Feedback */}
-        {showRejectFeedback && (
-          <div className="mb-3 animate-fade-in">
-            <Textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Optional: Why are you rejecting this lead?"
-              className="text-xs resize-none"
-            />
-          </div>
-        )}
+        {/* Reject Dialog */}
+        <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Reject Lead</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">Select the reasons for rejection:</p>
+              <div className="space-y-3">
+                {REJECTION_REASONS.map((reason) => (
+                  <div key={reason.id} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={reason.id}
+                      checked={selectedReasons.includes(reason.id)}
+                      onCheckedChange={() => toggleReason(reason.id)}
+                    />
+                    <label
+                      htmlFor={reason.id}
+                      className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {reason.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowRejectDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleConfirmReject}
+                disabled={selectedReasons.length === 0}
+              >
+                Reject Lead
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Actions */}
         {showActions && (
@@ -262,14 +311,14 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
               Commented
             </Button>
             <Button
-              variant={showRejectFeedback ? "destructive" : "outline"}
-              onClick={handleReject}
+              variant="outline"
+              onClick={handleRejectClick}
               disabled={isLoading}
               size="sm"
               className="flex-1 text-xs"
             >
               <X className="w-3.5 h-3.5 mr-1" />
-              {showRejectFeedback ? 'Confirm' : 'Reject'}
+              Reject
             </Button>
           </div>
         )}
