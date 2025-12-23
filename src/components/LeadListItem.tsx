@@ -101,9 +101,9 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
         {lead.position || '—'}
       </span>
 
-      {/* AI Comment Preview */}
+      {/* Post Content Preview */}
       <p className="text-muted-foreground truncate">
-        {lead.ai_comment || lead.post_content || '—'}
+        {lead.post_content || '—'}
       </p>
 
       {/* Recency Badge */}
