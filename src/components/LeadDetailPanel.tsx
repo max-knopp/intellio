@@ -290,32 +290,35 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
 
       {/* Actions */}
       {showActions && (
-        <div className="p-4 border-t border-border bg-card">
-          <div className="flex gap-2">
+        <div className="p-3 border-t border-border bg-card shrink-0">
+          <div className="flex gap-1.5">
             <Button
+              size="sm"
               onClick={handleSend}
               disabled={isLoading}
-              className="flex-1 bg-success hover:bg-success/90"
+              className="bg-success hover:bg-success/90 text-xs px-2"
             >
-              <Check className="w-4 h-4 mr-2" />
-              Send Message
+              <Check className="w-3.5 h-3.5 mr-1" />
+              Send
             </Button>
             <Button
+              size="sm"
               variant="secondary"
               onClick={() => onMarkCommented?.(lead.id)}
               disabled={isLoading}
-              className="flex-1"
+              className="text-xs px-2"
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Mark Commented
+              <MessageSquare className="w-3.5 h-3.5 mr-1" />
+              Commented
             </Button>
             <Button
+              size="sm"
               variant="outline"
               onClick={() => setShowRejectDialog(true)}
               disabled={isLoading}
-              className="flex-1"
+              className="text-xs px-2"
             >
-              <X className="w-4 h-4 mr-2" />
+              <X className="w-3.5 h-3.5 mr-1" />
               Reject
             </Button>
           </div>
