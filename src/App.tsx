@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Analytics from "./pages/Analytics";
 import Contacts from "./pages/Contacts";
 import Podcasts from "./pages/Podcasts";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,14 @@ const App = () => (
               element={
                 <AppLayout>
                   <Podcasts />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/help"
+              element={
+                <AppLayout>
+                  <Help />
                 </AppLayout>
               }
             />
