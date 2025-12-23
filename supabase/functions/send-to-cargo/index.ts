@@ -6,9 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const CARGO_API_TOKEN = Deno.env.get('CARGO_API_TOKEN');
-const CARGO_MODEL_ID = "d9493cc3-d655-4b14-88a8-113d742b59e2";
-const CARGO_API_URL = `https://api.getcargo.io/v1/models/${CARGO_MODEL_ID}/records/ingest?token=${CARGO_API_TOKEN}`;
+const CARGO_API_URL = "https://api.getcargo.io/v1/models/d9493cc3-d655-4b14-88a8-113d742b59e2/records/ingest?token=8d5b3a3981a43e43a6f96112295dc2fc1c3955da1fbb79166e56caea4d92d623";
 
 serve(async (req) => {
   // Handle CORS preflight requests
