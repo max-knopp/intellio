@@ -82,6 +82,10 @@ export default function Settings() {
     );
   }
 
+  // NOTE: This client-side role check is for UX purposes only (hiding/showing UI elements).
+  // SECURITY: Actual authorization is enforced server-side via RLS policies on org_members
+  // and org_invites tables. Even if this check is bypassed via browser dev tools, the
+  // database will reject unauthorized operations. See RLS policies for the real security boundary.
   const canManageMembers = userRole === 'owner' || userRole === 'admin';
 
   return (
