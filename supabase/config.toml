@@ -1,7 +1,9 @@
 project_id = "pnirdblczvangprdswxz"
 
 [functions.receive-lead]
+# Webhook endpoint - uses custom API key validation for external service integration
 verify_jwt = false
 
 [functions.send-to-cargo]
-verify_jwt = false
+# Requires authenticated user - JWT verification enabled for Supabase built-in protection
+verify_jwt = true
