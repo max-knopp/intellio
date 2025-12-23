@@ -46,6 +46,19 @@ export function useLeads() {
 
   const sendLead = useMutation({
     mutationFn: async ({ id, message }: { id: string; message: string }) => {
+      // First, send to Cargo via edge function
+      const { data: cargoData, error: cargoError } = await supabase.functions.invoke('send-to-cargo', {
+        body: { leadId: id, message }
+      });
+
+      if (cargoError) {
+        console.error('Cargo API error:', cargoError);
+        throw new Error(cargoError.message || 'Failed to send to Cargo');
+      }
+
+      console.log('Cargo response:', cargoData);
+
+      // Then update the lead status in the database
       const { error } = await supabase
         .from('leads')
         .update({ 
@@ -59,7 +72,7 @@ export function useLeads() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
-      toast({ title: 'Message sent!', description: 'The outreach has been approved and sent.' });
+      toast({ title: 'Message sent!', description: 'The outreach has been approved and sent to Cargo.' });
     },
     onError: (error) => {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
