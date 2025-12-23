@@ -1,13 +1,23 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Flame, Thermometer, Snowflake, Sparkles, Check, X, MessageSquare,
-  Send, Clock, ThumbsUp, UserCheck, ArrowRight
-} from 'lucide-react';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Flame,
+  Thermometer,
+  Snowflake,
+  Sparkles,
+  Check,
+  X,
+  MessageSquare,
+  Send,
+  Clock,
+  ThumbsUp,
+  UserCheck,
+  ArrowRight,
+} from "lucide-react";
 
 export default function Help() {
   const { user, loading } = useAuth();
@@ -15,7 +25,7 @@ export default function Help() {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/auth');
+      navigate("/auth");
     }
   }, [user, loading, navigate]);
 
@@ -31,9 +41,7 @@ export default function Help() {
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Help Center</h1>
-        <p className="text-muted-foreground mt-2">
-          Learn how to use the lead management system effectively
-        </p>
+        <p className="text-muted-foreground mt-2">Learn how to use the lead management system effectively</p>
       </div>
 
       {/* Lead Labels Section */}
@@ -74,7 +82,7 @@ export default function Help() {
                   Warm
                 </Badge>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Posted within the last 7 days</p>
+                  <p className="text-sm font-medium text-foreground">Posted within the last 3 days</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Good timing for engagement. The content is still relevant and the lead is reasonably active.
                   </p>
@@ -86,7 +94,7 @@ export default function Help() {
                   Cold
                 </Badge>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Posted more than 7 days ago</p>
+                  <p className="text-sm font-medium text-foreground">Posted more than 3 days ago</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     The post is older. Consider if the topic is still relevant before reaching out.
                   </p>
@@ -256,11 +264,11 @@ export default function Help() {
                 </div>
                 <h3 className="font-semibold text-foreground">Send</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
-                Approves and sends the outreach message to the lead.
-              </p>
+              <p className="text-sm text-muted-foreground mb-3">Approves and sends the outreach message to the lead.</p>
               <div className="text-xs space-y-1.5 text-muted-foreground">
-                <p><span className="font-medium text-foreground">What happens:</span></p>
+                <p>
+                  <span className="font-medium text-foreground">What happens:</span>
+                </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>The AI-generated message (with any edits you made) is sent to Cargo API</li>
                   <li>Cargo processes the message and delivers it to the lead via LinkedIn</li>
@@ -283,7 +291,9 @@ export default function Help() {
                 Marks that you've manually left a comment on the lead's post.
               </p>
               <div className="text-xs space-y-1.5 text-muted-foreground">
-                <p><span className="font-medium text-foreground">What happens:</span></p>
+                <p>
+                  <span className="font-medium text-foreground">What happens:</span>
+                </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>The lead status changes to "Commented"</li>
                   <li>The lead moves out of the pending inbox</li>
@@ -306,7 +316,9 @@ export default function Help() {
                 Declines the lead and removes it from your active pipeline.
               </p>
               <div className="text-xs space-y-1.5 text-muted-foreground">
-                <p><span className="font-medium text-foreground">What happens:</span></p>
+                <p>
+                  <span className="font-medium text-foreground">What happens:</span>
+                </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>A dialog appears asking for rejection reasons</li>
                   <li>You can select predefined reasons or add custom feedback</li>
@@ -314,11 +326,22 @@ export default function Help() {
                   <li>Rejection feedback is saved and can be used to improve AI targeting</li>
                   <li>The lead is removed from your pending inbox</li>
                 </ul>
-                <p className="mt-2"><span className="font-medium text-foreground">Rejection reasons:</span></p>
+                <p className="mt-2">
+                  <span className="font-medium text-foreground">Rejection reasons:</span>
+                </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li><span className="font-medium">Profile not ICP</span> - The person doesn't match your ideal customer profile</li>
-                  <li><span className="font-medium">Post not relevant</span> - The content they posted isn't a good conversation starter</li>
-                  <li><span className="font-medium">Bad quality message</span> - The AI-generated message/comment isn't suitable</li>
+                  <li>
+                    <span className="font-medium">Profile not ICP</span> - The person doesn't match your ideal customer
+                    profile
+                  </li>
+                  <li>
+                    <span className="font-medium">Post not relevant</span> - The content they posted isn't a good
+                    conversation starter
+                  </li>
+                  <li>
+                    <span className="font-medium">Bad quality message</span> - The AI-generated message/comment isn't
+                    suitable
+                  </li>
                 </ul>
               </div>
             </div>
