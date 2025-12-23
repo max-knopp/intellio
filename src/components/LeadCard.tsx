@@ -33,6 +33,7 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
   const [comment, setComment] = useState(lead.ai_comment || '');
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
+  const [otherFeedback, setOtherFeedback] = useState('');
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -54,13 +55,21 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
   };
 
   const handleConfirmReject = () => {
-    const feedback = selectedReasons
+    const predefinedReasons = selectedReasons
+      .filter(id => id !== 'other')
       .map(id => REJECTION_REASONS.find(r => r.id === id)?.label)
-      .filter(Boolean)
-      .join(', ');
-    onReject(lead.id, feedback || undefined);
+      .filter(Boolean) as string[];
+    
+    const reasons: string[] = [...predefinedReasons];
+    
+    if (selectedReasons.includes('other') && otherFeedback.trim()) {
+      reasons.push(otherFeedback.trim());
+    }
+    
+    onReject(lead.id, reasons.join(', ') || undefined);
     setShowRejectDialog(false);
     setSelectedReasons([]);
+    setOtherFeedback('');
   };
 
   const toggleReason = (reasonId: string) => {
@@ -271,6 +280,30 @@ export function LeadCard({ lead, onSend, onReject, onMarkCommented, isLoading }:
                     </label>
                   </div>
                 ))}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="other"
+                      checked={selectedReasons.includes('other')}
+                      onCheckedChange={() => toggleReason('other')}
+                    />
+                    <label
+                      htmlFor="other"
+                      className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Other
+                    </label>
+                  </div>
+                  {selectedReasons.includes('other') && (
+                    <Textarea
+                      value={otherFeedback}
+                      onChange={(e) => setOtherFeedback(e.target.value)}
+                      placeholder="Enter custom feedback..."
+                      className="text-sm resize-none ml-6"
+                      rows={2}
+                    />
+                  )}
+                </div>
               </div>
             </div>
             <DialogFooter>
