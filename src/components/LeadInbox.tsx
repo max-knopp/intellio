@@ -148,6 +148,17 @@ export function LeadInbox() {
                 </Select>
               </div>
 
+              {/* Column Headers */}
+              <div className="grid grid-cols-[32px_100px_120px_80px_1fr_60px_50px] items-center gap-2 px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                <span></span>
+                <span>Company</span>
+                <span>Name</span>
+                <span>Title</span>
+                <span>Post</span>
+                <span className="text-center">Recency</span>
+                <span className="text-right">Score</span>
+              </div>
+
               {/* Lead Lists */}
               <div className="flex-1 overflow-hidden">
                 <TabsContent value="pending" className="h-full m-0">
