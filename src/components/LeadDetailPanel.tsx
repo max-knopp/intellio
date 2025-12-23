@@ -296,7 +296,7 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
               size="sm"
               onClick={handleSend}
               disabled={isLoading}
-              className="bg-success hover:bg-success/90 text-xs px-2"
+              className="flex-1 bg-success hover:bg-success/90 text-xs"
             >
               <Check className="w-3.5 h-3.5 mr-1" />
               Send
@@ -306,7 +306,7 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
               variant="secondary"
               onClick={() => onMarkCommented?.(lead.id)}
               disabled={isLoading}
-              className="text-xs px-2"
+              className="flex-1 text-xs"
             >
               <MessageSquare className="w-3.5 h-3.5 mr-1" />
               Commented
@@ -316,7 +316,7 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
               variant="outline"
               onClick={() => setShowRejectDialog(true)}
               disabled={isLoading}
-              className="text-xs px-2"
+              className="flex-1 text-xs hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
             >
               <X className="w-3.5 h-3.5 mr-1" />
               Reject
