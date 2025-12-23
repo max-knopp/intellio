@@ -80,7 +80,7 @@ export function LeadInbox() {
     <div className="h-[calc(100vh-8rem)] bg-background rounded-lg border border-border overflow-hidden">
       <ResizablePanelGroup direction="horizontal">
         {/* Left Panel - List */}
-        <ResizablePanel defaultSize={35} minSize={25} maxSize={60}>
+        <ResizablePanel defaultSize={66} minSize={40} maxSize={80}>
           <div className="flex flex-col h-full">
             <Tabs defaultValue="pending" className="flex flex-col h-full">
               {/* Header */}
@@ -197,7 +197,7 @@ export function LeadInbox() {
         <ResizableHandle withHandle className="hidden md:flex" />
 
         {/* Right Panel - Detail */}
-        <ResizablePanel defaultSize={65} minSize={40} className="hidden md:block">
+        <ResizablePanel defaultSize={34} minSize={20} className="hidden md:block">
           <div className="h-full bg-muted/30">
             {selectedLead ? (
               <LeadDetailPanel
