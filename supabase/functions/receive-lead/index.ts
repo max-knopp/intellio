@@ -121,7 +121,7 @@ serve(async (req) => {
     if (insertError) {
       console.error('Error inserting lead:', insertError);
       return new Response(
-        JSON.stringify({ error: 'Failed to create lead', details: insertError.message }),
+        JSON.stringify({ error: 'Failed to create lead' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
