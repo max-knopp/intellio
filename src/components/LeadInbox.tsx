@@ -154,7 +154,7 @@ export function LeadInbox() {
                 <span>Company</span>
                 <span>Name</span>
                 <span>Title</span>
-                <span>Post</span>
+                <span>Comment</span>
                 <span className="text-center">Recency</span>
                 <span className="text-right">Score</span>
               </div>
