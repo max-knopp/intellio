@@ -55,11 +55,17 @@ Deno.serve(async (req) => {
 
     console.log('Sending daily summary to webhook:', payload);
 
+    const makeApiKey = Deno.env.get('MAKE_API_KEY');
+    if (!makeApiKey) {
+      throw new Error('MAKE_API_KEY not configured');
+    }
+
     // Send to Make.com webhook
     const webhookResponse = await fetch('https://hook.eu2.make.com/wutdugy5w87ronm435p1mx2upjajqs33', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-make-apikey': makeApiKey,
       },
       body: JSON.stringify(payload),
     });
