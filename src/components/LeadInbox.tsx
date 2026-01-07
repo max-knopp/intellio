@@ -16,7 +16,7 @@ function sortLeads(leads: Lead[], sortBy: SortOption): Lead[] {
   return [...leads].sort((a, b) => {
     const recencyA = getRecencyLevel(a.post_date || a.created_at);
     const recencyB = getRecencyLevel(b.post_date || b.created_at);
-    const recencyOrder = { 'Hot': 0, 'Warm': 1, 'Cold': 2 };
+    const recencyOrder: Record<string, number> = { 'hot': 0, 'warm': 1, 'cold': 2 };
     const scoreA = a.relevance_score || 0;
     const scoreB = b.relevance_score || 0;
 
