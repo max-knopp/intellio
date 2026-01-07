@@ -7,3 +7,7 @@ verify_jwt = false
 [functions.send-to-cargo]
 # Requires authenticated user - JWT verification enabled for Supabase built-in protection
 verify_jwt = true
+
+[functions.daily-lead-summary]
+# Cron job endpoint - called by pg_cron, no JWT needed
+verify_jwt = false
