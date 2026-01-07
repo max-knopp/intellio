@@ -10,23 +10,37 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { Inbox, Send, XCircle, Loader2, MessageSquare, ArrowUpDown } from 'lucide-react';
 import { getRecencyLevel } from './LeadCard';
 
-type SortOption = 'recency' | 'relevancy';
+type SortOption = 'recency-then-score' | 'score-then-recency';
 
 function sortLeads(leads: Lead[], sortBy: SortOption): Lead[] {
   return [...leads].sort((a, b) => {
-    if (sortBy === 'recency') {
-      const dateA = new Date(a.post_date || a.created_at).getTime();
-      const dateB = new Date(b.post_date || b.created_at).getTime();
-      return dateB - dateA;
+    const recencyA = getRecencyLevel(a.post_date || a.created_at);
+    const recencyB = getRecencyLevel(b.post_date || b.created_at);
+    const recencyOrder = { 'Hot': 0, 'Warm': 1, 'Cold': 2 };
+    const scoreA = a.relevance_score || 0;
+    const scoreB = b.relevance_score || 0;
+
+    if (sortBy === 'recency-then-score') {
+      // Primary: recency category (Hot > Warm > Cold)
+      if (recencyOrder[recencyA] !== recencyOrder[recencyB]) {
+        return recencyOrder[recencyA] - recencyOrder[recencyB];
+      }
+      // Secondary: score within same recency category
+      return scoreB - scoreA;
     } else {
-      return (b.relevance_score || 0) - (a.relevance_score || 0);
+      // Primary: score
+      if (scoreA !== scoreB) {
+        return scoreB - scoreA;
+      }
+      // Secondary: recency within same score
+      return recencyOrder[recencyA] - recencyOrder[recencyB];
     }
   });
 }
 
 export function LeadInbox() {
   const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented } = useLeads();
-  const [sortBy, setSortBy] = useState<SortOption>('recency');
+  const [sortBy, setSortBy] = useState<SortOption>('recency-then-score');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 
   const sortedPendingLeads = useMemo(() => sortLeads(pendingLeads, sortBy), [pendingLeads, sortBy]);
@@ -142,8 +156,8 @@ export function LeadInbox() {
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover">
-                    <SelectItem value="recency">Sort by Recency</SelectItem>
-                    <SelectItem value="relevancy">Sort by Relevancy</SelectItem>
+                    <SelectItem value="recency-then-score">Recency → Score</SelectItem>
+                    <SelectItem value="score-then-recency">Score → Recency</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
