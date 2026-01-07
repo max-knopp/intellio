@@ -58,30 +58,78 @@ function sanitizeText(text: string): string {
 }
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID();
+  const timestamp = new Date().toISOString();
+
+  // Log every incoming request immediately
+  console.log('=== INCOMING REQUEST ===');
+  console.log('Request ID:', requestId);
+  console.log('Timestamp:', timestamp);
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Headers:', JSON.stringify(Object.fromEntries(req.headers.entries()), null, 2));
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    console.log('Request ID:', requestId, '- CORS preflight, returning 200');
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Handle GET requests for health checks
+  if (req.method === 'GET') {
+    console.log('Request ID:', requestId, '- Health check request');
+    return new Response(
+      JSON.stringify({ 
+        status: 'ok', 
+        message: 'receive-lead endpoint is active',
+        timestamp: timestamp,
+        request_id: requestId,
+        method_received: req.method
+      }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
+    // Read raw body first for logging
+    const rawBody = await req.text();
+    console.log('Request ID:', requestId, '- Raw body length:', rawBody.length);
+    console.log('Request ID:', requestId, '- Raw body:', rawBody.substring(0, 1000)); // First 1000 chars
+
     // Validate API key
     const apiKey = req.headers.get('x-api-key');
     const expectedApiKey = Deno.env.get('CARGO_WEBHOOK_API_KEY');
 
+    console.log('Request ID:', requestId, '- API key present:', !!apiKey);
+    console.log('Request ID:', requestId, '- Expected API key configured:', !!expectedApiKey);
+
     if (!apiKey || apiKey !== expectedApiKey) {
-      console.error('Invalid or missing API key');
+      console.error('Request ID:', requestId, '- FAILED: Invalid or missing API key');
       return new Response(
-        JSON.stringify({ error: 'Unauthorized: Invalid API key' }),
+        JSON.stringify({ error: 'Unauthorized: Invalid API key', request_id: requestId }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse request body
-    const payload: LeadPayload = await req.json();
+    console.log('Request ID:', requestId, '- API key validation: PASSED');
+
+    // Parse request body from raw text
+    let payload: LeadPayload;
+    try {
+      payload = JSON.parse(rawBody);
+      console.log('Request ID:', requestId, '- JSON parse: SUCCESS');
+      console.log('Request ID:', requestId, '- Payload keys:', Object.keys(payload));
+    } catch (parseError) {
+      console.error('Request ID:', requestId, '- FAILED: JSON parse error:', parseError);
+      return new Response(
+        JSON.stringify({ error: 'Bad Request: Invalid JSON', request_id: requestId }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Validate required fields
     if (!payload.user_email || !payload.person_id || !payload.contact_name || !payload.linkedin_url || !payload.ai_message) {
-      console.error('Missing required fields:', { 
+      console.error('Request ID:', requestId, '- FAILED: Missing required fields:', { 
         user_email: !!payload.user_email,
         person_id: !!payload.person_id,
         contact_name: !!payload.contact_name,
@@ -91,55 +139,60 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           error: 'Bad Request: Missing required fields',
-          required: ['user_email', 'person_id', 'contact_name', 'linkedin_url', 'ai_message']
+          required: ['user_email', 'person_id', 'contact_name', 'linkedin_url', 'ai_message'],
+          request_id: requestId
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Request ID:', requestId, '- Required fields validation: PASSED');
+
     // Validate email format
     if (!isValidEmail(payload.user_email)) {
-      console.error('Invalid email format');
+      console.error('Request ID:', requestId, '- FAILED: Invalid email format');
       return new Response(
-        JSON.stringify({ error: 'Bad Request: Invalid email format' }),
+        JSON.stringify({ error: 'Bad Request: Invalid email format', request_id: requestId }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Validate person_id format
     if (!isValidPersonId(payload.person_id)) {
-      console.error('Invalid person_id format');
+      console.error('Request ID:', requestId, '- FAILED: Invalid person_id format');
       return new Response(
-        JSON.stringify({ error: 'Bad Request: Invalid person_id format' }),
+        JSON.stringify({ error: 'Bad Request: Invalid person_id format', request_id: requestId }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Validate LinkedIn URL
     if (!isValidLinkedInUrl(payload.linkedin_url)) {
-      console.error('Invalid LinkedIn URL');
+      console.error('Request ID:', requestId, '- FAILED: Invalid LinkedIn URL');
       return new Response(
-        JSON.stringify({ error: 'Bad Request: Invalid LinkedIn URL' }),
+        JSON.stringify({ error: 'Bad Request: Invalid LinkedIn URL', request_id: requestId }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Validate optional URLs
     if (payload.post_url && !isValidUrl(payload.post_url)) {
-      console.error('Invalid post URL');
+      console.error('Request ID:', requestId, '- FAILED: Invalid post URL');
       return new Response(
-        JSON.stringify({ error: 'Bad Request: Invalid post URL' }),
+        JSON.stringify({ error: 'Bad Request: Invalid post URL', request_id: requestId }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (payload.profile_photo_url && !isValidUrl(payload.profile_photo_url)) {
-      console.error('Invalid profile photo URL');
+      console.error('Request ID:', requestId, '- FAILED: Invalid profile photo URL');
       return new Response(
-        JSON.stringify({ error: 'Bad Request: Invalid profile photo URL' }),
+        JSON.stringify({ error: 'Bad Request: Invalid profile photo URL', request_id: requestId }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('Request ID:', requestId, '- URL validation: PASSED');
 
     // Validate input lengths to prevent abuse
     const lengthLimits = {
@@ -153,13 +206,15 @@ serve(async (req) => {
 
     for (const [field, config] of Object.entries(lengthLimits)) {
       if (config.value && config.value.length > config.max) {
-        console.error(`Field ${field} exceeds max length of ${config.max}`);
+        console.error('Request ID:', requestId, `- FAILED: Field ${field} exceeds max length of ${config.max}`);
         return new Response(
-          JSON.stringify({ error: `Bad Request: ${field} exceeds maximum length` }),
+          JSON.stringify({ error: `Bad Request: ${field} exceeds maximum length`, request_id: requestId }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
     }
+
+    console.log('Request ID:', requestId, '- Length validation: PASSED');
 
     // Sanitize text fields
     const sanitizedPayload = {
@@ -172,33 +227,38 @@ serve(async (req) => {
       ai_comment: payload.ai_comment ? sanitizeText(payload.ai_comment) : null,
     };
 
+    console.log('Request ID:', requestId, '- Sanitization: COMPLETE');
+
     // Initialize Supabase client with service role
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Look up user by email
+    console.log('Request ID:', requestId, '- Looking up user:', payload.user_email);
     const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
     
     if (userError) {
-      console.error('Error fetching users:', userError);
+      console.error('Request ID:', requestId, '- FAILED: Error fetching users:', userError);
       return new Response(
-        JSON.stringify({ error: 'Internal error looking up user' }),
+        JSON.stringify({ error: 'Internal error looking up user', request_id: requestId }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const user = userData.users.find(u => u.email === payload.user_email);
+    console.log('Request ID:', requestId, '- User found:', user ? user.id : 'NOT FOUND');
     
     if (!user) {
-      console.error('User not found:', payload.user_email);
+      console.error('Request ID:', requestId, '- FAILED: User not found:', payload.user_email);
       return new Response(
-        JSON.stringify({ error: 'User not found with provided email' }),
+        JSON.stringify({ error: 'User not found with provided email', request_id: requestId }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Insert the lead with sanitized data
+    console.log('Request ID:', requestId, '- Inserting lead for user:', user.id);
     const { data: lead, error: insertError } = await supabase
       .from('leads')
       .insert({
@@ -221,28 +281,34 @@ serve(async (req) => {
       .single();
 
     if (insertError) {
-      console.error('Error inserting lead:', insertError);
+      console.error('Request ID:', requestId, '- FAILED: Error inserting lead:', insertError);
       return new Response(
-        JSON.stringify({ error: 'Failed to create lead' }),
+        JSON.stringify({ error: 'Failed to create lead', request_id: requestId }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Lead created successfully:', lead.id);
+    console.log('=== REQUEST COMPLETE ===');
+    console.log('Request ID:', requestId);
+    console.log('Status: 201 Created');
+    console.log('Lead ID:', lead.id);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         lead_id: lead.id,
+        request_id: requestId,
         message: 'Lead received and queued for review'
       }),
       { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
+    console.error('=== REQUEST FAILED ===');
+    console.error('Request ID:', requestId);
     console.error('Unexpected error:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', request_id: requestId }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
