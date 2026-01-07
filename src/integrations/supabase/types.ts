@@ -58,6 +58,36 @@ export type Database = {
           },
         ]
       }
+      daily_summary_log: {
+        Row: {
+          created_at: string
+          hot_leads: number
+          id: string
+          summary_date: string
+          total_actionable: number
+          warm_leads: number
+          webhook_status: number | null
+        }
+        Insert: {
+          created_at?: string
+          hot_leads: number
+          id?: string
+          summary_date: string
+          total_actionable: number
+          warm_leads: number
+          webhook_status?: number | null
+        }
+        Update: {
+          created_at?: string
+          hot_leads?: number
+          id?: string
+          summary_date?: string
+          total_actionable?: number
+          warm_leads?: number
+          webhook_status?: number | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           ai_comment: string | null
