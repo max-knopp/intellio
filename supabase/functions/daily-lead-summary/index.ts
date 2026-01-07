@@ -16,6 +16,30 @@ Deno.serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Get today's date in YYYY-MM-DD format (Copenhagen timezone approximation using UTC+1)
+    const now = new Date();
+    const copenhagenOffset = 1 * 60 * 60 * 1000; // UTC+1
+    const copenhagenNow = new Date(now.getTime() + copenhagenOffset);
+    const todayDate = copenhagenNow.toISOString().split('T')[0];
+
+    // Check if we already sent a summary today (idempotency check)
+    const { data: existingLog } = await supabase
+      .from('daily_summary_log')
+      .select('id')
+      .eq('summary_date', todayDate)
+      .maybeSingle();
+
+    if (existingLog) {
+      console.log('Summary already sent today, skipping duplicate');
+      return new Response(JSON.stringify({
+        success: true,
+        skipped: true,
+        message: 'Summary already sent today'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Fetch leads that are pending, interested, or converted (not sent, commented, or rejected)
     const { data: leads, error } = await supabase
       .from('leads')
@@ -27,7 +51,6 @@ Deno.serve(async (req) => {
       throw error;
     }
 
-    const now = new Date();
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const seventyTwoHoursAgo = new Date(now.getTime() - 72 * 60 * 60 * 1000);
 
@@ -43,7 +66,6 @@ Deno.serve(async (req) => {
       } else if (date >= seventyTwoHoursAgo) {
         warmCount++;
       }
-      // Cold leads (older than 72 hours) are not counted
     }
 
     const payload = {
@@ -72,6 +94,17 @@ Deno.serve(async (req) => {
 
     const webhookStatus = webhookResponse.status;
     console.log('Webhook response status:', webhookStatus);
+
+    // Log this send to prevent duplicates
+    await supabase
+      .from('daily_summary_log')
+      .insert({
+        summary_date: todayDate,
+        hot_leads: hotCount,
+        warm_leads: warmCount,
+        total_actionable: hotCount + warmCount,
+        webhook_status: webhookStatus
+      });
 
     return new Response(JSON.stringify({
       success: true,
