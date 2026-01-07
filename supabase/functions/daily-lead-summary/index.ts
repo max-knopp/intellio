@@ -28,8 +28,8 @@ Deno.serve(async (req) => {
     }
 
     const now = new Date();
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const seventyTwoHoursAgo = new Date(now.getTime() - 72 * 60 * 60 * 1000);
 
     let hotCount = 0;
     let warmCount = 0;
@@ -38,12 +38,12 @@ Deno.serve(async (req) => {
       const dateStr = lead.post_date || lead.created_at;
       const date = new Date(dateStr);
       
-      if (date >= sevenDaysAgo) {
+      if (date >= twentyFourHoursAgo) {
         hotCount++;
-      } else if (date >= thirtyDaysAgo) {
+      } else if (date >= seventyTwoHoursAgo) {
         warmCount++;
       }
-      // Cold leads (older than 30 days) are not counted
+      // Cold leads (older than 72 hours) are not counted
     }
 
     const payload = {
