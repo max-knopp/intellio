@@ -72,6 +72,10 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
     );
   };
 
+  const isHighlighted = recency === 'hot' || recency === 'warm';
+  const highlightBorder = recency === 'hot' ? 'border-l-orange-500' : recency === 'warm' ? 'border-l-amber-500' : '';
+  const highlightBg = recency === 'hot' ? 'bg-orange-500/5' : recency === 'warm' ? 'bg-amber-500/5' : '';
+
   // Mobile layout - simplified card-like design
   if (isMobile) {
     return (
@@ -81,6 +85,8 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
           "flex items-center gap-3 px-3 py-3 cursor-pointer border-b border-border transition-colors",
           isSelected 
             ? "bg-primary/10 border-l-2 border-l-primary" 
+            : isHighlighted
+            ? `border-l-2 ${highlightBorder} ${highlightBg} hover:bg-muted/50 active:bg-muted`
             : "hover:bg-muted/50 active:bg-muted"
         )}
       >
@@ -127,6 +133,8 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
         "grid items-center gap-4 px-4 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
         isSelected 
           ? "bg-primary/10 border-l-2 border-l-primary" 
+          : isHighlighted
+          ? `border-l-2 ${highlightBorder} ${highlightBg} hover:bg-muted/50`
           : "hover:bg-muted/50"
       )}
       style={{ gridTemplateColumns: gridTemplate || '32px 100px 140px 120px 1fr 60px 50px' }}
