@@ -24,25 +24,13 @@ interface OrgMember {
   email?: string;
 }
 
-interface OrgInvite {
-  id: string;
-  org_id: string;
-  email: string;
-  role: 'admin' | 'member';
-  created_at: string;
-  expires_at: string;
-}
-
 interface OrganizationContextType {
   organization: Organization | null;
   members: OrgMember[];
-  invites: OrgInvite[];
   isLoading: boolean;
   userRole: 'owner' | 'admin' | 'member' | null;
   createOrganization: (name: string) => Promise<void>;
-  inviteMember: (email: string, role: 'admin' | 'member') => Promise<void>;
   removeMember: (memberId: string) => Promise<void>;
-  cancelInvite: (inviteId: string) => Promise<void>;
   refetch: () => void;
 }
 
@@ -108,22 +96,6 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     enabled: !!organization,
   });
 
-  // Fetch org invites
-  const { data: invites = [], refetch: refetchInvites } = useQuery({
-    queryKey: ['org-invites', organization?.id],
-    queryFn: async () => {
-      if (!organization) return [];
-      const { data, error } = await supabase
-        .from('org_invites')
-        .select('*')
-        .eq('org_id', organization.id);
-      
-      if (error) throw error;
-      return data as OrgInvite[];
-    },
-    enabled: !!organization,
-  });
-
   const createOrganization = async (name: string) => {
     if (!user) throw new Error('Not authenticated');
 
@@ -146,24 +118,6 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     refetchMembership();
   };
 
-  const inviteMember = async (email: string, role: 'admin' | 'member') => {
-    if (!organization) throw new Error('No organization');
-
-    const { error } = await supabase
-      .from('org_invites')
-      .insert({ org_id: organization.id, email, role, invited_by: user!.id });
-
-    if (error) {
-      if (error.code === '23505') {
-        throw new Error('This email has already been invited');
-      }
-      throw error;
-    }
-
-    toast({ title: 'Invitation sent', description: `Invitation sent to ${email}` });
-    refetchInvites();
-  };
-
   const removeMember = async (memberId: string) => {
     const { error } = await supabase
       .from('org_members')
@@ -175,34 +129,19 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     refetchMembers();
   };
 
-  const cancelInvite = async (inviteId: string) => {
-    const { error } = await supabase
-      .from('org_invites')
-      .delete()
-      .eq('id', inviteId);
-
-    if (error) throw error;
-    toast({ title: 'Invitation cancelled' });
-    refetchInvites();
-  };
-
   const refetch = () => {
     refetchMembership();
     refetchMembers();
-    refetchInvites();
   };
 
   return (
     <OrganizationContext.Provider value={{
       organization,
       members,
-      invites,
       isLoading: loadingMembership,
       userRole,
       createOrganization,
-      inviteMember,
       removeMember,
-      cancelInvite,
       refetch,
     }}>
       {children}

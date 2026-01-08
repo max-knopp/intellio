@@ -168,44 +168,6 @@ export type Database = {
           },
         ]
       }
-      org_invites: {
-        Row: {
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          invited_by: string
-          org_id: string
-          role: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          expires_at?: string
-          id?: string
-          invited_by: string
-          org_id: string
-          role?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_by?: string
-          org_id?: string
-          role?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "org_invites_org_id_fkey"
-            columns: ["org_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       org_members: {
         Row: {
           created_at: string
