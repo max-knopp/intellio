@@ -265,7 +265,7 @@ export function LeadDetailPanel({
         </div>}
 
       {/* Notes Section */}
-      <div className="p-3 border-t border-border bg-card shrink-0">
+      <div className="p-4 border-t border-border bg-card shrink-0">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Notes</h3>
           {notes !== lead.notes && (
