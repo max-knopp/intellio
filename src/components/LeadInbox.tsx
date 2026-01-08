@@ -39,7 +39,7 @@ function sortLeads(leads: Lead[], sortBy: SortOption): Lead[] {
 }
 
 export function LeadInbox() {
-  const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented, updateNotes } = useLeads();
+  const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented, updateNotes, updateMessage } = useLeads();
   const [sortBy, setSortBy] = useState<SortOption>('recency-then-score');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -74,6 +74,10 @@ export function LeadInbox() {
 
   const handleUpdateNotes = (id: string, notes: string) => {
     updateNotes.mutate({ id, notes });
+  };
+
+  const handleUpdateMessage = (id: string, message: string) => {
+    updateMessage.mutate({ id, message });
   };
 
   const handleCloseDetail = () => {
@@ -229,6 +233,7 @@ export function LeadInbox() {
                 onReject={handleReject}
                 onMarkCommented={handleMarkCommented}
                 onUpdateNotes={handleUpdateNotes}
+                onUpdateMessage={handleUpdateMessage}
                 isLoading={sendLead.isPending || rejectLead.isPending || markCommented.isPending}
                 onClose={handleCloseDetail}
               />
@@ -384,6 +389,7 @@ export function LeadInbox() {
                 onReject={handleReject}
                 onMarkCommented={handleMarkCommented}
                 onUpdateNotes={handleUpdateNotes}
+                onUpdateMessage={handleUpdateMessage}
                 isLoading={sendLead.isPending || rejectLead.isPending || markCommented.isPending}
                 onClose={() => setSelectedLeadId(null)}
               />
