@@ -20,6 +20,7 @@ interface LeadPayload {
   ai_message: string;
   ai_comment?: string;
   relevance_score?: number;
+  org_id?: string;
 }
 
 // Validation helpers
@@ -263,6 +264,7 @@ serve(async (req) => {
       .from('leads')
       .insert({
         user_id: user.id,
+        org_id: sanitizedPayload.org_id || null,
         person_id: sanitizedPayload.person_id,
         contact_name: sanitizedPayload.contact_name,
         position: sanitizedPayload.position,
