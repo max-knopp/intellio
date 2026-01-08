@@ -142,6 +142,23 @@ export function useLeads() {
     },
   });
 
+  const updateMessage = useMutation({
+    mutationFn: async ({ id, message }: { id: string; message: string }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ final_message: message })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: (error) => {
+      toast({ title: 'Error saving message', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const pendingLeads = leads.filter(l => l.status === 'pending');
   const commentedLeads = leads.filter(l => l.status === 'commented');
   const sentLeads = leads.filter(l => l.status === 'sent');
@@ -164,5 +181,6 @@ export function useLeads() {
     markCommented,
     updateLeadStatus,
     updateNotes,
+    updateMessage,
   };
 }

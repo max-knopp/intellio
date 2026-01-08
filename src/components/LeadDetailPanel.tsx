@@ -28,6 +28,7 @@ interface LeadDetailPanelProps {
   onReject: (id: string, feedback?: string) => void;
   onMarkCommented?: (id: string) => void;
   onUpdateNotes?: (id: string, notes: string) => void;
+  onUpdateMessage?: (id: string, message: string) => void;
   isLoading?: boolean;
   onClose: () => void;
 }
@@ -37,6 +38,7 @@ export function LeadDetailPanel({
   onReject,
   onMarkCommented,
   onUpdateNotes,
+  onUpdateMessage,
   isLoading,
   onClose
 }: LeadDetailPanelProps) {
@@ -50,14 +52,14 @@ export function LeadDetailPanel({
   const [notes, setNotes] = useState(lead.notes || '');
   const [notesSaving, setNotesSaving] = useState(false);
 
-  // Sync state when lead changes
+  // Sync state when lead changes - use final_message if available, otherwise ai_message
   useEffect(() => {
-    setMessage(lead.ai_message);
+    setMessage(lead.final_message || lead.ai_message);
     setComment(lead.ai_comment || '');
     setNotes(lead.notes || '');
     setIsEditingMessage(false);
     setIsEditingComment(false);
-  }, [lead.id, lead.notes]);
+  }, [lead.id, lead.notes, lead.final_message]);
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
@@ -124,6 +126,17 @@ export function LeadDetailPanel({
       onUpdateNotes(lead.id, notes);
       setTimeout(() => setNotesSaving(false), 500);
     }
+  };
+
+  const handleToggleEditMessage = () => {
+    if (isEditingMessage) {
+      // Saving - check if message changed from original
+      const originalMessage = lead.final_message || lead.ai_message;
+      if (message !== originalMessage && onUpdateMessage) {
+        onUpdateMessage(lead.id, message);
+      }
+    }
+    setIsEditingMessage(!isEditingMessage);
   };
 
   const showActions = lead.status === 'pending';
@@ -225,7 +238,7 @@ export function LeadDetailPanel({
                   <Copy className="w-3 h-3 mr-1" />
                   Copy
                 </Button>
-                {showActions && <Button variant="ghost" size="sm" onClick={() => setIsEditingMessage(!isEditingMessage)} className="h-7 text-xs">
+                {showActions && <Button variant="ghost" size="sm" onClick={handleToggleEditMessage} className="h-7 text-xs">
                     <Edit3 className="w-3 h-3 mr-1" />
                     {isEditingMessage ? 'Done' : 'Edit'}
                   </Button>}
