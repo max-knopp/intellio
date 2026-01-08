@@ -46,13 +46,15 @@ export function ResizableColumnHeader({
   }, [onResize]);
 
   return (
-    <div className={cn("relative flex items-center", className)}>
+    <div className={cn("relative flex items-center pr-2", className)}>
       <span className="truncate">{children}</span>
       {resizable && (
         <div
-          className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/30 transition-colors"
+          className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize group flex items-center justify-center"
           onMouseDown={handleMouseDown}
-        />
+        >
+          <div className="w-0.5 h-3 bg-muted-foreground/30 group-hover:bg-primary/60 transition-colors rounded-full" />
+        </div>
       )}
     </div>
   );
