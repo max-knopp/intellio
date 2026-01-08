@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Inbox, Send, XCircle, Loader2, MessageSquare, ArrowUpDown } from 'lucide-react';
 import { getRecencyLevel } from './LeadCard';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -211,9 +211,9 @@ export function LeadInbox() {
           </div>
         </div>
 
-        {/* Mobile Detail Sheet */}
-        <Sheet open={!!selectedLead} onOpenChange={(open) => !open && handleCloseDetail()}>
-          <SheetContent side="bottom" className="h-[90vh] p-0">
+        {/* Mobile Detail Drawer - swipe down to close */}
+        <Drawer open={!!selectedLead} onOpenChange={(open) => !open && handleCloseDetail()}>
+          <DrawerContent className="h-[90vh] max-h-[90vh]">
             {selectedLead && (
               <LeadDetailPanel
                 lead={selectedLead}
@@ -224,8 +224,8 @@ export function LeadInbox() {
                 onClose={handleCloseDetail}
               />
             )}
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       </>
     );
   }
