@@ -29,6 +29,7 @@ interface LeadDetailPanelProps {
   onMarkCommented?: (id: string) => void;
   onUpdateNotes?: (id: string, notes: string) => void;
   onUpdateMessage?: (id: string, message: string) => void;
+  onUpdateComment?: (id: string, comment: string) => void;
   isLoading?: boolean;
   onClose: () => void;
 }
@@ -39,6 +40,7 @@ export function LeadDetailPanel({
   onMarkCommented,
   onUpdateNotes,
   onUpdateMessage,
+  onUpdateComment,
   isLoading,
   onClose
 }: LeadDetailPanelProps) {
@@ -52,14 +54,14 @@ export function LeadDetailPanel({
   const [notes, setNotes] = useState(lead.notes || '');
   const [notesSaving, setNotesSaving] = useState(false);
 
-  // Sync state when lead changes - use final_message if available, otherwise ai_message
+  // Sync state when lead changes - use final versions if available
   useEffect(() => {
     setMessage(lead.final_message || lead.ai_message);
-    setComment(lead.ai_comment || '');
+    setComment(lead.final_comment || lead.ai_comment || '');
     setNotes(lead.notes || '');
     setIsEditingMessage(false);
     setIsEditingComment(false);
-  }, [lead.id, lead.notes, lead.final_message]);
+  }, [lead.id, lead.notes, lead.final_message, lead.final_comment]);
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
@@ -139,6 +141,17 @@ export function LeadDetailPanel({
     setIsEditingMessage(!isEditingMessage);
   };
 
+  const handleToggleEditComment = () => {
+    if (isEditingComment) {
+      // Saving - check if comment changed from original
+      const originalComment = lead.final_comment || lead.ai_comment || '';
+      if (comment !== originalComment && onUpdateComment) {
+        onUpdateComment(lead.id, comment);
+      }
+    }
+    setIsEditingComment(!isEditingComment);
+  };
+
   const showActions = lead.status === 'pending';
   return <div className="h-full flex flex-col bg-card border-l border-border">
       {/* Header */}
@@ -215,7 +228,7 @@ export function LeadDetailPanel({
                     <Copy className="w-3 h-3 mr-1" />
                     Copy
                   </Button>
-                  {showActions && <Button variant="ghost" size="sm" onClick={() => setIsEditingComment(!isEditingComment)} className="h-7 text-xs">
+                  {showActions && <Button variant="ghost" size="sm" onClick={handleToggleEditComment} className="h-7 text-xs">
                       <Edit3 className="w-3 h-3 mr-1" />
                       {isEditingComment ? 'Done' : 'Edit'}
                     </Button>}
