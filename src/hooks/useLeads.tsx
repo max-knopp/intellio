@@ -23,6 +23,7 @@ export interface Lead {
   sent_at: string | null;
   created_at: string;
   notes: string | null;
+  final_comment: string | null;
 }
 
 export function useLeads() {
@@ -159,6 +160,23 @@ export function useLeads() {
     },
   });
 
+  const updateComment = useMutation({
+    mutationFn: async ({ id, comment }: { id: string; comment: string }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ final_comment: comment })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: (error) => {
+      toast({ title: 'Error saving comment', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const pendingLeads = leads.filter(l => l.status === 'pending');
   const commentedLeads = leads.filter(l => l.status === 'commented');
   const sentLeads = leads.filter(l => l.status === 'sent');
@@ -182,5 +200,6 @@ export function useLeads() {
     updateLeadStatus,
     updateNotes,
     updateMessage,
+    updateComment,
   };
 }

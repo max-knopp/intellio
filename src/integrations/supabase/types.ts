@@ -95,6 +95,7 @@ export type Database = {
           company: string | null
           contact_name: string
           created_at: string
+          final_comment: string | null
           final_message: string | null
           id: string
           linkedin_url: string
@@ -119,6 +120,7 @@ export type Database = {
           company?: string | null
           contact_name: string
           created_at?: string
+          final_comment?: string | null
           final_message?: string | null
           id?: string
           linkedin_url: string
@@ -143,6 +145,7 @@ export type Database = {
           company?: string | null
           contact_name?: string
           created_at?: string
+          final_comment?: string | null
           final_message?: string | null
           id?: string
           linkedin_url?: string
