@@ -44,6 +44,25 @@ export default function Help() {
         <p className="text-muted-foreground text-sm mt-2">Learn how to use the lead management system effectively</p>
       </div>
 
+      {/* Video Tutorial */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            📹 Video Tutorial
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="aspect-video rounded-lg overflow-hidden">
+            <iframe
+              src="https://www.loom.com/embed/b5249a309e3d43859fccac4820e8d460"
+              frameBorder="0"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Lead Labels Section */}
       <Card>
         <CardHeader>
