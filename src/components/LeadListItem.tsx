@@ -10,10 +10,9 @@ interface LeadListItemProps {
   lead: Lead;
   isSelected: boolean;
   onClick: () => void;
-  gridTemplate?: string;
 }
 
-export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadListItemProps) {
+export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
   const isMobile = useIsMobile();
 
   const getInitials = (name: string) => {
@@ -124,12 +123,11 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
     <div
       onClick={onClick}
       className={cn(
-        "grid items-center gap-4 px-3 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
+        "grid grid-cols-[32px_100px_140px_120px_1fr_60px_50px] items-center gap-4 px-4 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
         isSelected 
           ? "bg-primary/10 border-l-2 border-l-primary" 
           : "hover:bg-muted/50"
       )}
-      style={{ gridTemplateColumns: gridTemplate || '32px 100px 140px 120px 1fr 60px 50px' }}
     >
       {/* Avatar */}
       <Avatar className="h-7 w-7 border border-border flex-shrink-0">
