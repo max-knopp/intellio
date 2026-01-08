@@ -311,7 +311,7 @@ export function LeadDetailPanel({
                     Other
                   </label>
                 </div>
-                {selectedReasons.includes('other') && <Textarea value={otherFeedback} onChange={e => setOtherFeedback(e.target.value)} placeholder="Enter custom feedback..." className="text-sm resize-none ml-6" rows={2} />}
+                {selectedReasons.includes('other') && <Textarea value={otherFeedback} onChange={e => setOtherFeedback(e.target.value)} placeholder="Enter custom feedback..." className="text-sm resize-none ml-6 mr-6" rows={2} />}
               </div>
             </div>
           </div>
