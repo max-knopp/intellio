@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy, Flame, Thermometer, Snowflake, Calendar } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Check, X, ExternalLink, Edit3, Sparkles, MessageSquare, Copy, Flame, Thermometer, Snowflake, Calendar, ChevronDown } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { getRecencyLevel } from './LeadCard';
 import { format } from 'date-fns';
@@ -242,6 +243,20 @@ export function LeadDetailPanel({
               {isEditingComment ? <Textarea value={comment} onChange={e => setComment(e.target.value)} className="min-h-24 text-sm resize-none" /> : <div className="rounded-lg p-4 border border-primary/40 bg-primary/5">
                   <p className="text-sm text-foreground whitespace-pre-wrap">{comment}</p>
                 </div>}
+              {/* Show original comment if edited */}
+              {!isEditingComment && lead.final_comment && lead.final_comment !== lead.ai_comment && (
+                <Collapsible className="mt-2">
+                  <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronDown className="w-3 h-3" />
+                    View original
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="mt-2 rounded-lg p-3 border border-border bg-muted/30">
+                      <p className="text-xs text-muted-foreground whitespace-pre-wrap">{lead.ai_comment}</p>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
             </div>}
 
           {/* AI Message */}
@@ -270,6 +285,20 @@ export function LeadDetailPanel({
             {isEditingMessage ? <Textarea value={message} onChange={e => setMessage(e.target.value)} className="min-h-32 text-sm resize-none" /> : <div className="rounded-lg p-4 border border-primary/40 bg-primary/5">
                 <p className="text-sm text-foreground whitespace-pre-wrap">{message}</p>
               </div>}
+            {/* Show original message if edited */}
+            {!isEditingMessage && lead.final_message && lead.final_message !== lead.ai_message && (
+              <Collapsible className="mt-2">
+                <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  <ChevronDown className="w-3 h-3" />
+                  View original
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="mt-2 rounded-lg p-3 border border-border bg-muted/30">
+                    <p className="text-xs text-muted-foreground whitespace-pre-wrap">{lead.ai_message}</p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
           </div>
 
           {/* Rejection Feedback (for rejected leads) */}
