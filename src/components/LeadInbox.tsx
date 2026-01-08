@@ -304,7 +304,7 @@ export function LeadInbox() {
               </div>
 
               {/* Column Headers */}
-              <div className="grid grid-cols-[32px_100px_120px_80px_1fr_60px_50px] items-center gap-2 px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              <div className="grid grid-cols-[32px_100px_140px_120px_1fr_60px_50px] items-center gap-4 px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
                 <span></span>
                 <span>Company</span>
                 <span>Name</span>
