@@ -7,8 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Inbox, Send, XCircle, Loader2, MessageSquare, ArrowUpDown } from 'lucide-react';
 import { getRecencyLevel } from './LeadCard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type SortOption = 'recency-then-score' | 'score-then-recency';
 
@@ -21,18 +23,14 @@ function sortLeads(leads: Lead[], sortBy: SortOption): Lead[] {
     const scoreB = b.relevance_score || 0;
 
     if (sortBy === 'recency-then-score') {
-      // Primary: recency category (Hot > Warm > Cold)
       if (recencyOrder[recencyA] !== recencyOrder[recencyB]) {
         return recencyOrder[recencyA] - recencyOrder[recencyB];
       }
-      // Secondary: score within same recency category
       return scoreB - scoreA;
     } else {
-      // Primary: score
       if (scoreA !== scoreB) {
         return scoreB - scoreA;
       }
-      // Secondary: recency within same score
       return recencyOrder[recencyA] - recencyOrder[recencyB];
     }
   });
@@ -42,6 +40,7 @@ export function LeadInbox() {
   const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented } = useLeads();
   const [sortBy, setSortBy] = useState<SortOption>('recency-then-score');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const sortedPendingLeads = useMemo(() => sortLeads(pendingLeads, sortBy), [pendingLeads, sortBy]);
   const sortedCommentedLeads = useMemo(() => sortLeads(commentedLeads, sortBy), [commentedLeads, sortBy]);
@@ -70,6 +69,10 @@ export function LeadInbox() {
     markCommented.mutate({ id });
   };
 
+  const handleCloseDetail = () => {
+    setSelectedLeadId(null);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -90,6 +93,144 @@ export function LeadInbox() {
     ));
   };
 
+  // Mobile layout uses a Sheet for detail panel
+  if (isMobile) {
+    return (
+      <>
+        <div className="h-[calc(100vh-8rem)] bg-background rounded-lg border border-border overflow-hidden">
+          <div className="flex flex-col h-full">
+            <Tabs defaultValue="pending" className="flex flex-col h-full">
+              {/* Header */}
+              <div className="p-2 border-b border-border space-y-2">
+                <TabsList className="w-full h-8 p-0.5 bg-muted/50 grid grid-cols-4">
+                  <TabsTrigger 
+                    value="pending" 
+                    className="h-7 text-[10px] gap-0.5 px-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <Inbox className="w-3 h-3" />
+                    <span className="hidden xs:inline">Pending</span>
+                    {pendingLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[9px] ml-0.5">
+                        {pendingLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="commented" 
+                    className="h-7 text-[10px] gap-0.5 px-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <MessageSquare className="w-3 h-3" />
+                    <span className="hidden xs:inline">Commented</span>
+                    {commentedLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[9px] ml-0.5">
+                        {commentedLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="sent" 
+                    className="h-7 text-[10px] gap-0.5 px-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <Send className="w-3 h-3" />
+                    <span className="hidden xs:inline">Sent</span>
+                    {sentLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[9px] ml-0.5">
+                        {sentLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="rejected" 
+                    className="h-7 text-[10px] gap-0.5 px-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    <XCircle className="w-3 h-3" />
+                    <span className="hidden xs:inline">Rejected</span>
+                    {rejectedLeads.length > 0 && (
+                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[9px] ml-0.5">
+                        {rejectedLeads.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                </TabsList>
+
+                <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+                  <SelectTrigger className="h-8 text-xs bg-background">
+                    <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="recency-then-score">Recency → Score</SelectItem>
+                    <SelectItem value="score-then-recency">Score → Recency</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Lead Lists - no column headers on mobile */}
+              <div className="flex-1 overflow-hidden">
+                <TabsContent value="pending" className="h-full m-0">
+                  <ScrollArea className="h-full">
+                    {sortedPendingLeads.length === 0 ? (
+                      <EmptyState icon={<Inbox className="w-10 h-10" />} title="No pending leads" />
+                    ) : (
+                      renderLeadList(sortedPendingLeads)
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="commented" className="h-full m-0">
+                  <ScrollArea className="h-full">
+                    {sortedCommentedLeads.length === 0 ? (
+                      <EmptyState icon={<MessageSquare className="w-10 h-10" />} title="No commented leads" />
+                    ) : (
+                      renderLeadList(sortedCommentedLeads)
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="sent" className="h-full m-0">
+                  <ScrollArea className="h-full">
+                    {sortedSentLeads.length === 0 ? (
+                      <EmptyState icon={<Send className="w-10 h-10" />} title="No sent messages" />
+                    ) : (
+                      renderLeadList(sortedSentLeads)
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="rejected" className="h-full m-0">
+                  <ScrollArea className="h-full">
+                    {sortedRejectedLeads.length === 0 ? (
+                      <EmptyState icon={<XCircle className="w-10 h-10" />} title="No rejected leads" />
+                    ) : (
+                      renderLeadList(sortedRejectedLeads)
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+        </div>
+
+        {/* Mobile Detail Sheet */}
+        <Sheet open={!!selectedLead} onOpenChange={(open) => !open && handleCloseDetail()}>
+          <SheetContent side="bottom" className="h-[90vh] p-0">
+            {selectedLead && (
+              <LeadDetailPanel
+                lead={selectedLead}
+                onSend={handleSend}
+                onReject={handleReject}
+                onMarkCommented={handleMarkCommented}
+                isLoading={sendLead.isPending || rejectLead.isPending || markCommented.isPending}
+                onClose={handleCloseDetail}
+              />
+            )}
+          </SheetContent>
+        </Sheet>
+      </>
+    );
+  }
+
+  // Desktop layout with resizable panels
   return (
     <div className="h-[calc(100vh-8rem)] bg-background rounded-lg border border-border overflow-hidden">
       <ResizablePanelGroup direction="horizontal">

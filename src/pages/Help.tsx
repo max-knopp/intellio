@@ -38,10 +38,10 @@ export default function Help() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Help Center</h1>
-        <p className="text-muted-foreground mt-2">Learn how to use the lead management system effectively</p>
+        <h1 className="text-xl md:text-3xl font-bold text-foreground">Help Center</h1>
+        <p className="text-muted-foreground text-sm mt-2">Learn how to use the lead management system effectively</p>
       </div>
 
       {/* Lead Labels Section */}

@@ -239,10 +239,10 @@ export default function Analytics() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-3 md:p-4 space-y-3 md:space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-display font-semibold text-foreground">Analytics</h1>
-        <span className="text-xs text-muted-foreground">Last 14 days</span>
+        <h1 className="text-base md:text-lg font-display font-semibold text-foreground">Analytics</h1>
+        <span className="text-[10px] md:text-xs text-muted-foreground">Last 14 days</span>
       </div>
 
       {/* KPI Cards - Compact */}
