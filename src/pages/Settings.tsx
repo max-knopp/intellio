@@ -89,10 +89,10 @@ export default function Settings() {
   const canManageMembers = userRole === 'owner' || userRole === 'admin';
 
   return (
-    <div className="container max-w-4xl py-8 space-y-8">
+    <div className="p-4 md:p-6 lg:container max-w-4xl space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your organization and team members</p>
+        <h1 className="text-xl md:text-3xl font-bold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground text-sm mt-1">Manage your organization and team members</p>
       </div>
 
       {!organization ? (

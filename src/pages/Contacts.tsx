@@ -87,22 +87,22 @@ export default function Contacts() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-foreground">Contacts</h1>
+        <h1 className="text-xl md:text-2xl font-display font-semibold text-foreground">Contacts</h1>
         <p className="text-muted-foreground text-sm mt-1">
           View and manage all your contacts
         </p>
       </div>
 
       <Card className="border-border/50 bg-card/50">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <CardHeader className="pb-4 px-3 md:px-6">
+          <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name, company, or position..."
+                placeholder="Search contacts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
@@ -113,10 +113,10 @@ export default function Contacts() {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as LeadStatus | "all")}
             >
-              <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[160px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover">
                 <SelectItem value="all">All Statuses</SelectItem>
                 {Object.entries(statusConfig).map(([key, { label }]) => (
                   <SelectItem key={key} value={key}>
@@ -129,7 +129,79 @@ export default function Contacts() {
         </CardHeader>
         <CardContent className="p-0">
           <ScrollArea className="h-[calc(100vh-280px)]">
-            <Table>
+            {/* Mobile: Card-based layout */}
+            <div className="md:hidden divide-y divide-border">
+              {filteredContacts.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No contacts found
+                </div>
+              ) : (
+                filteredContacts.map((contact) => (
+                  <div key={contact.id} className="p-3 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={contact.profile_photo_url || undefined} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          {getInitials(contact.contact_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-foreground text-sm block truncate">
+                          {contact.contact_name}
+                        </span>
+                        {contact.company && (
+                          <span className="text-xs text-muted-foreground truncate block">
+                            {contact.company}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                        className="h-8 px-2"
+                      >
+                        <a
+                          href={contact.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between pl-13">
+                      {contact.position && (
+                        <span className="text-xs text-muted-foreground truncate">
+                          {contact.position}
+                        </span>
+                      )}
+                      <Select
+                        value={contact.status}
+                        onValueChange={(value) =>
+                          handleStatusChange(contact.id, value as LeadStatus)
+                        }
+                      >
+                        <SelectTrigger className="h-7 w-[120px]">
+                          <Badge variant={statusConfig[contact.status].variant} className="text-[10px]">
+                            {statusConfig[contact.status].label}
+                          </Badge>
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          {Object.entries(statusConfig).map(([key, { label }]) => (
+                            <SelectItem key={key} value={key}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            {/* Desktop: Table layout */}
+            <Table className="hidden md:table">
               <TableHeader>
                 <TableRow className="border-border/50">
                   <TableHead className="w-[300px]">Contact</TableHead>
