@@ -222,6 +222,11 @@ export function LeadDetailPanel({
                 <h3 className="text-sm font-medium text-foreground flex items-center gap-1.5">
                   <MessageSquare className="w-4 h-4" />
                   Suggested Comment
+                  {lead.final_comment && lead.final_comment !== lead.ai_comment && (
+                    <Badge variant="outline" className="ml-1.5 text-[10px] px-1.5 py-0 h-4 text-muted-foreground">
+                      edited
+                    </Badge>
+                  )}
                 </h3>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="sm" onClick={handleCopyComment} className="h-7 text-xs">
@@ -245,6 +250,11 @@ export function LeadDetailPanel({
               <h3 className="text-sm font-medium text-foreground flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
                 AI-Generated Message
+                {lead.final_message && lead.final_message !== lead.ai_message && (
+                  <Badge variant="outline" className="ml-1.5 text-[10px] px-1.5 py-0 h-4 text-muted-foreground">
+                    edited
+                  </Badge>
+                )}
               </h3>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={handleCopyMessage} className="h-7 text-xs">
