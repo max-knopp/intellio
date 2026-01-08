@@ -123,7 +123,7 @@ export function LeadListItem({ lead, isSelected, onClick }: LeadListItemProps) {
     <div
       onClick={onClick}
       className={cn(
-        "grid grid-cols-[32px_100px_140px_120px_1fr_60px_50px] items-center gap-3 px-3 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
+        "grid grid-cols-[32px_100px_140px_120px_1fr_60px_50px] items-center gap-4 px-3 py-2.5 cursor-pointer border-b border-border transition-colors text-[13px]",
         isSelected 
           ? "bg-primary/10 border-l-2 border-l-primary" 
           : "hover:bg-muted/50"
