@@ -5,23 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { Building2, Users, Mail, Crown, Shield, User, Trash2, X, Loader2 } from 'lucide-react';
+import { Building2, Users, Crown, Shield, User, Trash2, Loader2 } from 'lucide-react';
 
 export default function Settings() {
   const { user } = useAuth();
-  const { organization, members, invites, userRole, isLoading, createOrganization, inviteMember, removeMember, cancelInvite } = useOrganization();
+  const { organization, members, userRole, isLoading, createOrganization, removeMember } = useOrganization();
   const { toast } = useToast();
   
   const [orgName, setOrgName] = useState('');
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
   const [isCreating, setIsCreating] = useState(false);
-  const [isInviting, setIsInviting] = useState(false);
 
   const handleCreateOrg = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,22 +30,6 @@ export default function Settings() {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } finally {
       setIsCreating(false);
-    }
-  };
-
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail.trim()) return;
-    
-    setIsInviting(true);
-    try {
-      await inviteMember(inviteEmail.trim(), inviteRole);
-      setInviteEmail('');
-      setInviteRole('member');
-    } catch (error: any) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    } finally {
-      setIsInviting(false);
     }
   };
 
@@ -83,9 +62,7 @@ export default function Settings() {
   }
 
   // NOTE: This client-side role check is for UX purposes only (hiding/showing UI elements).
-  // SECURITY: Actual authorization is enforced server-side via RLS policies on org_members
-  // and org_invites tables. Even if this check is bypassed via browser dev tools, the
-  // database will reject unauthorized operations. See RLS policies for the real security boundary.
+  // SECURITY: Actual authorization is enforced server-side via RLS policies on org_members.
   const canManageMembers = userRole === 'owner' || userRole === 'admin';
 
   return (
@@ -103,7 +80,7 @@ export default function Settings() {
               Create Organization
             </CardTitle>
             <CardDescription>
-              Create an organization to invite team members and share leads
+              Create an organization to manage your team
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -184,82 +161,6 @@ export default function Settings() {
               ))}
             </CardContent>
           </Card>
-
-          {canManageMembers && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Invite Members
-                </CardTitle>
-                <CardDescription>
-                  Invite new members to join your organization
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <form onSubmit={handleInvite} className="flex gap-4">
-                  <div className="flex-1">
-                    <Label htmlFor="invite-email" className="sr-only">Email</Label>
-                    <Input
-                      id="invite-email"
-                      type="email"
-                      placeholder="colleague@example.com"
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                    />
-                  </div>
-                  <Select value={inviteRole} onValueChange={(v) => setInviteRole(v as 'admin' | 'member')}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button type="submit" disabled={isInviting || !inviteEmail.trim()}>
-                    {isInviting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Invite
-                  </Button>
-                </form>
-
-                {invites.length > 0 && (
-                  <>
-                    <Separator />
-                    <div>
-                      <h4 className="text-sm font-medium mb-3">Pending Invitations</h4>
-                      <div className="space-y-2">
-                        {invites.map((invite) => (
-                          <div key={invite.id} className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              <div>
-                                <p className="text-sm">{invite.email}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  Expires {new Date(invite.expires_at).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline">{invite.role}</Badge>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                onClick={() => cancelInvite(invite.id)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </>
       )}
     </div>
