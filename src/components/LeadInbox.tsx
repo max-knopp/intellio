@@ -11,6 +11,8 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Inbox, Send, XCircle, Loader2, MessageSquare, ArrowUpDown } from 'lucide-react';
 import { getRecencyLevel } from './LeadCard';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useColumnWidths } from '@/hooks/useColumnWidths';
+import { ResizableColumnHeader } from './ResizableColumnHeader';
 
 type SortOption = 'recency-then-score' | 'score-then-recency';
 
@@ -41,6 +43,7 @@ export function LeadInbox() {
   const [sortBy, setSortBy] = useState<SortOption>('recency-then-score');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const { widths, updateWidth, getGridTemplate } = useColumnWidths();
 
   const sortedPendingLeads = useMemo(() => sortLeads(pendingLeads, sortBy), [pendingLeads, sortBy]);
   const sortedCommentedLeads = useMemo(() => sortLeads(commentedLeads, sortBy), [commentedLeads, sortBy]);
@@ -89,6 +92,7 @@ export function LeadInbox() {
         lead={lead}
         isSelected={selectedLeadId === lead.id}
         onClick={() => setSelectedLeadId(lead.id)}
+        gridTemplate={getGridTemplate()}
       />
     ));
   };
@@ -304,14 +308,17 @@ export function LeadInbox() {
               </div>
 
               {/* Column Headers */}
-              <div className="grid grid-cols-[32px_100px_140px_120px_1fr_60px_50px] items-center gap-4 px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+              <div 
+                className="grid items-center gap-4 px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wide"
+                style={{ gridTemplateColumns: getGridTemplate() }}
+              >
                 <span></span>
-                <span>Company</span>
-                <span>Name</span>
-                <span>Title</span>
+                <ResizableColumnHeader onResize={(d) => updateWidth('company', d)}>Company</ResizableColumnHeader>
+                <ResizableColumnHeader onResize={(d) => updateWidth('name', d)}>Name</ResizableColumnHeader>
+                <ResizableColumnHeader onResize={(d) => updateWidth('title', d)}>Title</ResizableColumnHeader>
                 <span>Post</span>
-                <span className="text-center">Recency</span>
-                <span className="text-right">Score</span>
+                <ResizableColumnHeader onResize={(d) => updateWidth('recency', d)} className="justify-center">Recency</ResizableColumnHeader>
+                <ResizableColumnHeader onResize={(d) => updateWidth('score', d)} className="justify-end" resizable={false}>Score</ResizableColumnHeader>
               </div>
 
               {/* Lead Lists */}
