@@ -22,6 +22,7 @@ export interface Lead {
   final_message: string | null;
   sent_at: string | null;
   created_at: string;
+  notes: string | null;
 }
 
 export function useLeads() {
@@ -124,6 +125,23 @@ export function useLeads() {
     },
   });
 
+  const updateNotes = useMutation({
+    mutationFn: async ({ id, notes }: { id: string; notes: string }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ notes })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: (error) => {
+      toast({ title: 'Error saving notes', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const pendingLeads = leads.filter(l => l.status === 'pending');
   const commentedLeads = leads.filter(l => l.status === 'commented');
   const sentLeads = leads.filter(l => l.status === 'sent');
@@ -145,5 +163,6 @@ export function useLeads() {
     rejectLead,
     markCommented,
     updateLeadStatus,
+    updateNotes,
   };
 }

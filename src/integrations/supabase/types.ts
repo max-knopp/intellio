@@ -98,6 +98,7 @@ export type Database = {
           final_message: string | null
           id: string
           linkedin_url: string
+          notes: string | null
           org_id: string | null
           person_id: string
           position: string | null
@@ -121,6 +122,7 @@ export type Database = {
           final_message?: string | null
           id?: string
           linkedin_url: string
+          notes?: string | null
           org_id?: string | null
           person_id: string
           position?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           final_message?: string | null
           id?: string
           linkedin_url?: string
+          notes?: string | null
           org_id?: string | null
           person_id?: string
           position?: string | null
