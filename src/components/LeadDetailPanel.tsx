@@ -27,6 +27,7 @@ interface LeadDetailPanelProps {
   onSend: (id: string, message: string) => void;
   onReject: (id: string, feedback?: string) => void;
   onMarkCommented?: (id: string) => void;
+  onUpdateNotes?: (id: string, notes: string) => void;
   isLoading?: boolean;
   onClose: () => void;
 }
@@ -35,6 +36,7 @@ export function LeadDetailPanel({
   onSend,
   onReject,
   onMarkCommented,
+  onUpdateNotes,
   isLoading,
   onClose
 }: LeadDetailPanelProps) {
@@ -45,14 +47,17 @@ export function LeadDetailPanel({
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [otherFeedback, setOtherFeedback] = useState('');
+  const [notes, setNotes] = useState(lead.notes || '');
+  const [notesSaving, setNotesSaving] = useState(false);
 
   // Sync state when lead changes
   useEffect(() => {
     setMessage(lead.ai_message);
     setComment(lead.ai_comment || '');
+    setNotes(lead.notes || '');
     setIsEditingMessage(false);
     setIsEditingComment(false);
-  }, [lead.id]);
+  }, [lead.id, lead.notes]);
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
@@ -113,6 +118,14 @@ export function LeadDetailPanel({
       });
     }
   };
+  const handleSaveNotes = async () => {
+    if (onUpdateNotes && notes !== lead.notes) {
+      setNotesSaving(true);
+      onUpdateNotes(lead.id, notes);
+      setTimeout(() => setNotesSaving(false), 500);
+    }
+  };
+
   const showActions = lead.status === 'pending';
   return <div className="h-full flex flex-col bg-card border-l border-border">
       {/* Header */}
@@ -250,6 +263,31 @@ export function LeadDetailPanel({
             </Button>
           </div>
         </div>}
+
+      {/* Notes Section */}
+      <div className="p-3 border-t border-border bg-card shrink-0">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Notes</h3>
+          {notes !== lead.notes && (
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={handleSaveNotes} 
+              disabled={notesSaving}
+              className="h-6 text-xs px-2"
+            >
+              {notesSaving ? 'Saving...' : 'Save'}
+            </Button>
+          )}
+        </div>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          onBlur={handleSaveNotes}
+          placeholder="Add notes about lead quality, message quality, or anything else..."
+          className="min-h-20 text-sm resize-none"
+        />
+      </div>
 
       {/* Reject Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
