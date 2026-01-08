@@ -14,6 +14,7 @@ import { Lead } from '@/hooks/useLeads';
 import { getRecencyLevel } from './LeadCard';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const REJECTION_REASONS = [
   { id: 'not_icp', label: 'Profile not ICP' },
@@ -135,7 +136,8 @@ export function LeadDetailPanel({ lead, onSend, onReject, onMarkCommented, isLoa
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose} className="text-muted-foreground hover:text-foreground">
+        {/* Hide close button on mobile since Sheet provides one */}
+        <Button variant="ghost" size="icon" onClick={onClose} className="text-muted-foreground hover:text-foreground hidden md:flex">
           <X className="w-5 h-5" />
         </Button>
       </div>
