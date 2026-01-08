@@ -208,7 +208,7 @@ export function LeadDetailPanel({
                     </Button>}
                 </div>
               </div>
-              {isEditingComment ? <Textarea value={comment} onChange={e => setComment(e.target.value)} className="min-h-24 text-sm resize-none" /> : <div className="rounded-lg p-4 border-l-2 border-l-primary/40 bg-primary/5">
+              {isEditingComment ? <Textarea value={comment} onChange={e => setComment(e.target.value)} className="min-h-24 text-sm resize-none" /> : <div className="rounded-lg p-4 border border-primary/40 bg-primary/5">
                   <p className="text-sm text-foreground whitespace-pre-wrap">{comment}</p>
                 </div>}
             </div>}
@@ -231,7 +231,7 @@ export function LeadDetailPanel({
                   </Button>}
               </div>
             </div>
-            {isEditingMessage ? <Textarea value={message} onChange={e => setMessage(e.target.value)} className="min-h-32 text-sm resize-none" /> : <div className="rounded-lg p-4 border-l-2 border-l-primary bg-primary/5">
+            {isEditingMessage ? <Textarea value={message} onChange={e => setMessage(e.target.value)} className="min-h-32 text-sm resize-none" /> : <div className="rounded-lg p-4 border border-primary bg-primary/5">
                 <p className="text-sm text-foreground whitespace-pre-wrap">{message}</p>
               </div>}
           </div>
