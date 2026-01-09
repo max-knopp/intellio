@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Flame, Thermometer, Snowflake, ChevronRight, UserCheck } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { getRecencyLevel } from './LeadCard';
@@ -183,12 +184,33 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
 
       {/* Recency Badge */}
       <div className="flex justify-center">
-        {getRecencyBadge()}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {getRecencyBadge()}
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs">
+            {recency === 'hot' && <p><strong>Hot:</strong> Posted within the last 24 hours. Best time to engage!</p>}
+            {recency === 'warm' && <p><strong>Warm:</strong> Posted within the last 7 days. Still a good opportunity.</p>}
+            {recency === 'cold' && <p><strong>Cold:</strong> Posted more than 7 days ago. May be less responsive.</p>}
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Relevancy Badge */}
       <div className="flex justify-end">
-        {getRelevancyBadge()}
+        {lead.relevance_score && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {getRelevancyBadge()}
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              {lead.relevance_score >= 80 && <p><strong>High Match ({lead.relevance_score}%):</strong> Excellent fit based on profile and content analysis.</p>}
+              {lead.relevance_score >= 60 && lead.relevance_score < 80 && <p><strong>Good Match ({lead.relevance_score}%):</strong> Solid potential based on profile signals.</p>}
+              {lead.relevance_score < 60 && <p><strong>Low Match ({lead.relevance_score}%):</strong> Limited alignment with target criteria.</p>}
+            </TooltipContent>
+          </Tooltip>
+        )}
+        {!lead.relevance_score && getRelevancyBadge()}
       </div>
     </div>
   );
