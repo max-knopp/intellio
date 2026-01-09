@@ -186,7 +186,9 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
       <div className="flex justify-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            {getRecencyBadge()}
+            <span className="cursor-help">
+              {getRecencyBadge()}
+            </span>
           </TooltipTrigger>
           <TooltipContent side="top" className="max-w-xs">
             {recency === 'hot' && <p><strong>Hot:</strong> Posted within the last 24 hours. Best time to engage!</p>}
@@ -198,10 +200,12 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
 
       {/* Relevancy Badge */}
       <div className="flex justify-end">
-        {lead.relevance_score && (
+        {lead.relevance_score ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              {getRelevancyBadge()}
+              <span className="cursor-help">
+                {getRelevancyBadge()}
+              </span>
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-xs">
               {lead.relevance_score >= 80 && <p><strong>High Match ({lead.relevance_score}%):</strong> Excellent fit based on profile and content analysis.</p>}
@@ -209,8 +213,7 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
               {lead.relevance_score < 60 && <p><strong>Low Match ({lead.relevance_score}%):</strong> Limited alignment with target criteria.</p>}
             </TooltipContent>
           </Tooltip>
-        )}
-        {!lead.relevance_score && getRelevancyBadge()}
+        ) : null}
       </div>
     </div>
   );
