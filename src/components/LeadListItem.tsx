@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Flame, Thermometer, Snowflake, ChevronRight } from 'lucide-react';
+import { Flame, Thermometer, Snowflake, ChevronRight, UserCheck } from 'lucide-react';
 import { Lead } from '@/hooks/useLeads';
 import { getRecencyLevel } from './LeadCard';
 import { cn } from '@/lib/utils';
@@ -11,9 +11,10 @@ interface LeadListItemProps {
   isSelected: boolean;
   onClick: () => void;
   gridTemplate?: string;
+  previouslyContacted?: boolean;
 }
 
-export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadListItemProps) {
+export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previouslyContacted }: LeadListItemProps) {
   const isMobile = useIsMobile();
 
   const getInitials = (name: string) => {
@@ -114,6 +115,12 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
             {lead.position || lead.post_content?.slice(0, 50) || '—'}
           </p>
           <div className="flex items-center gap-1.5 mt-1.5">
+            {previouslyContacted && (
+              <Badge variant="outline" className="h-5 text-[10px] px-1.5 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600">
+                <UserCheck className="w-2.5 h-2.5" />
+                <span>Contacted</span>
+              </Badge>
+            )}
             {getRecencyBadge()}
             {getRelevancyBadge()}
           </div>
@@ -153,9 +160,16 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate }: LeadLi
       </span>
 
       {/* Name */}
-      <span className="font-medium text-foreground truncate">
-        {lead.contact_name}
-      </span>
+      <div className="flex items-center gap-1.5 min-w-0">
+        <span className="font-medium text-foreground truncate">
+          {lead.contact_name}
+        </span>
+        {previouslyContacted && (
+          <Badge variant="outline" className="h-4 text-[9px] px-1 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600 flex-shrink-0">
+            <UserCheck className="w-2 h-2" />
+          </Badge>
+        )}
+      </div>
 
       {/* Title */}
       <span className="text-muted-foreground truncate">

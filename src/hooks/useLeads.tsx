@@ -184,6 +184,19 @@ export function useLeads() {
   const interestedLeads = leads.filter(l => l.status === 'interested');
   const convertedLeads = leads.filter(l => l.status === 'converted');
 
+  // Track LinkedIn URLs that have been contacted (sent or commented)
+  const contactedLinkedInUrls = new Set<string>(
+    leads
+      .filter(l => l.status === 'sent' || l.status === 'commented')
+      .map(l => l.linkedin_url)
+  );
+
+  // Check if a lead's contact has been previously contacted (excluding the current lead)
+  const hasBeenContacted = (lead: Lead): boolean => {
+    if (lead.status === 'sent' || lead.status === 'commented') return false;
+    return contactedLinkedInUrls.has(lead.linkedin_url);
+  };
+
   return {
     leads,
     pendingLeads,
@@ -201,5 +214,6 @@ export function useLeads() {
     updateNotes,
     updateMessage,
     updateComment,
+    hasBeenContacted,
   };
 }
