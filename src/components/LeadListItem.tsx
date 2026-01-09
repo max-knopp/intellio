@@ -83,7 +83,7 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
       <div
         onClick={onClick}
         className={cn(
-          "flex items-center gap-3 px-3 py-3 cursor-pointer border-b border-border transition-colors",
+          "flex items-start gap-3 px-4 py-4 cursor-pointer border-b border-border transition-colors",
           isSelected 
             ? "bg-primary/10 border-l-2 border-l-primary" 
             : isHighlighted
@@ -92,7 +92,7 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
         )}
       >
         {/* Avatar */}
-        <Avatar className="h-10 w-10 border border-border flex-shrink-0">
+        <Avatar className="h-10 w-10 border border-border flex-shrink-0 mt-0.5">
           <AvatarImage src={lead.profile_photo_url || undefined} alt={lead.contact_name} />
           <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
             {getInitials(lead.contact_name)}
@@ -100,21 +100,21 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
         </Avatar>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground text-sm truncate">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex flex-col gap-0.5">
+            <span className="font-semibold text-foreground text-sm break-words">
               {lead.contact_name}
             </span>
             {lead.company && (
-              <span className="text-xs text-primary font-medium truncate">
+              <span className="text-xs text-primary font-medium break-words">
                 @ {lead.company}
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground truncate mt-0.5">
-            {lead.position || lead.post_content?.slice(0, 50) || '—'}
+          <p className="text-xs text-muted-foreground mt-1 break-words line-clamp-2">
+            {lead.position || lead.post_content?.slice(0, 80) || '—'}
           </p>
-          <div className="flex items-center gap-1.5 mt-1.5">
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {previouslyContacted && (
               <Badge variant="outline" className="h-5 text-[10px] px-1.5 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600">
                 <UserCheck className="w-2.5 h-2.5" />
@@ -127,7 +127,7 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
         </div>
 
         {/* Chevron */}
-        <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
       </div>
     );
   }
