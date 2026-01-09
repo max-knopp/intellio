@@ -13,9 +13,10 @@ interface LeadListItemProps {
   onClick: () => void;
   gridTemplate?: string;
   previouslyContacted?: boolean;
+  contactCount?: number;
 }
 
-export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previouslyContacted }: LeadListItemProps) {
+export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previouslyContacted, contactCount = 0 }: LeadListItemProps) {
   const isMobile = useIsMobile();
 
   const getInitials = (name: string) => {
@@ -117,10 +118,19 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
           </p>
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {previouslyContacted && (
-              <Badge variant="outline" className="h-5 text-[10px] px-1.5 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600">
-                <UserCheck className="w-2.5 h-2.5" />
-                <span>Contacted</span>
-              </Badge>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="cursor-help">
+                    <Badge variant="outline" className="h-5 text-[10px] px-1.5 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600">
+                      <UserCheck className="w-2.5 h-2.5" />
+                      <span>Contacted</span>
+                    </Badge>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Reached out <strong>{contactCount} {contactCount === 1 ? 'time' : 'times'}</strong> previously</p>
+                </TooltipContent>
+              </Tooltip>
             )}
             {getRecencyBadge()}
             {getRelevancyBadge()}
@@ -166,9 +176,18 @@ export function LeadListItem({ lead, isSelected, onClick, gridTemplate, previous
           {lead.contact_name}
         </span>
         {previouslyContacted && (
-          <Badge variant="outline" className="h-4 text-[9px] px-1 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600 flex-shrink-0">
-            <UserCheck className="w-2 h-2" />
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help flex-shrink-0">
+                <Badge variant="outline" className="h-4 text-[9px] px-1 gap-0.5 border-purple-500/50 bg-purple-500/10 text-purple-600">
+                  <UserCheck className="w-2 h-2" />
+                </Badge>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Reached out <strong>{contactCount} {contactCount === 1 ? 'time' : 'times'}</strong> previously</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
 

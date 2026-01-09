@@ -39,7 +39,7 @@ function sortLeads(leads: Lead[], sortBy: SortOption): Lead[] {
 }
 
 export function LeadInbox() {
-  const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented, updateNotes, updateMessage, updateComment, hasBeenContacted } = useLeads();
+  const { pendingLeads, commentedLeads, sentLeads, rejectedLeads, isLoading, sendLead, rejectLead, markCommented, updateNotes, updateMessage, updateComment, hasBeenContacted, getContactCount } = useLeads();
   const [sortBy, setSortBy] = useState<SortOption>('recency-then-score');
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -106,6 +106,7 @@ export function LeadInbox() {
         onClick={() => setSelectedLeadId(lead.id)}
         gridTemplate={getGridTemplate()}
         previouslyContacted={hasBeenContacted(lead)}
+        contactCount={getContactCount(lead)}
       />
     ));
   };
